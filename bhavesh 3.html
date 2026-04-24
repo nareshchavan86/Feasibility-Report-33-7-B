@@ -108,13 +108,48 @@
     }
 
     /* ══════════════════════════════
+       BACKEND ACCESS BUTTON (SIDEBAR)
+       ══════════════════════════════ */
+    #backend-access-btn {
+      position: fixed;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+      background: linear-gradient(180deg, #2a52a0, #4472C4);
+      color: #fff;
+      border: none;
+      border-radius: 8px 0 0 8px;
+      padding: 16px 10px;
+      font-size: 13px;
+      font-weight: bold;
+      cursor: pointer;
+      z-index: 10000;
+      letter-spacing: 1px;
+      box-shadow: -3px 0 15px rgba(0,0,0,0.3);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    #backend-access-btn:hover {
+      background: linear-gradient(180deg, #1a3a6e, #2a52a0);
+      padding-right: 16px;
+    }
+    #backend-access-btn .btn-icon {
+      writing-mode: horizontal-tb;
+      font-size: 20px;
+    }
+
+    /* ══════════════════════════════
        AUTH MODAL OVERLAY
-    ══════════════════════════════ */
+       ══════════════════════════════ */
     #auth-modal {
       position: fixed; top:0; left:0; width:100%; height:100%;
       background: rgba(0,0,0,0.75);
       z-index: 9999;
-      display: flex;
+      display: none;
       justify-content: center;
       align-items: center;
       backdrop-filter: blur(4px);
@@ -134,15 +169,19 @@
       from { transform: translateY(-30px); opacity: 0; }
       to   { transform: translateY(0);     opacity: 1; }
     }
+    .auth-close-btn {
+      position: absolute;
+      top: 12px; right: 16px;
+      background: none; border: none;
+      font-size: 24px; cursor: pointer;
+      color: #999; transition: color 0.2s;
+    }
+    .auth-close-btn:hover { color: #333; }
     .auth-logo { font-size: 56px; margin-bottom: 12px; display: block; }
     .auth-box h3 { font-size: 22px; color: #222; margin-bottom: 6px; }
     .auth-box .auth-sub { font-size: 13px; color: #777; margin-bottom: 24px; line-height: 1.5; }
-
-    /* Steps */
     .auth-step { display: none; }
     .auth-step.active { display: block; }
-
-    /* Input styling */
     .auth-input-wrap { position: relative; margin-bottom: 16px; }
     .auth-input-wrap .input-icon {
       position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
@@ -157,8 +196,6 @@
     .auth-input:focus { border-color: #4472C4; }
     .auth-input.error { border-color: #ff4444; }
     .auth-input.success { border-color: #00B050; }
-
-    /* OTP input */
     .otp-input {
       width: 100%; padding: 14px;
       border: 2px solid #ddd; border-radius: 8px;
@@ -168,8 +205,6 @@
     }
     .otp-input:focus { border-color: #4472C4; }
     .otp-input.error { border-color: #ff4444; }
-
-    /* Buttons */
     .auth-btn {
       width: 100%; padding: 12px;
       background: #4472C4; color: #fff;
@@ -181,7 +216,6 @@
     .auth-btn:hover { background: #2a52a0; }
     .auth-btn:active { transform: scale(0.98); }
     .auth-btn:disabled { background: #aaa; cursor: not-allowed; }
-
     .auth-btn-secondary {
       width: 100%; padding: 10px;
       background: transparent; color: #4472C4;
@@ -191,8 +225,6 @@
       margin-top: 10px;
     }
     .auth-btn-secondary:hover { background: #4472C4; color: #fff; }
-
-    /* Messages */
     .auth-msg {
       font-size: 13px; margin-top: 10px; padding: 8px 12px;
       border-radius: 6px; display: none;
@@ -200,19 +232,13 @@
     .auth-msg.error { background: #fff0f0; color: #cc0000; border: 1px solid #ffcccc; display: block; }
     .auth-msg.success { background: #f0fff4; color: #00802b; border: 1px solid #b3f0c8; display: block; }
     .auth-msg.info { background: #f0f4ff; color: #1a3a6e; border: 1px solid #b3c6f0; display: block; }
-
-    /* Email highlight */
     .auth-email-display {
       background: #f0f4ff; border-radius: 8px; padding: 10px 14px;
       font-size: 14px; color: #1a3a6e; font-weight: bold;
       margin-bottom: 16px; border: 1px solid #b3c6f0;
     }
-
-    /* Timer */
     .otp-timer { font-size: 12px; color: #888; margin-top: 8px; }
     .otp-timer span { color: #ff4444; font-weight: bold; }
-
-    /* Steps indicator */
     .steps-indicator {
       display: flex; justify-content: center; gap: 8px; margin-bottom: 24px;
     }
@@ -222,8 +248,6 @@
     }
     .step-dot.active { background: #4472C4; }
     .step-dot.done { background: #00B050; }
-
-    /* Access denied */
     .denied-icon { font-size: 64px; margin-bottom: 16px; display: block; }
 
     /* Backend content */
@@ -282,14 +306,44 @@
       80%{transform:translateX(6px)}
     }
     .shake { animation: shake 0.4s ease; }
+
+    /* ══════════════════════════════
+       CLIENT VIEW NOTICE
+       ══════════════════════════════ */
+    .client-view-header {
+      background: linear-gradient(135deg, #4472C4, #2a52a0);
+      color: white;
+      text-align: center;
+      padding: 14px 20px;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 3px 10px rgba(68,114,196,0.3);
+    }
+    .client-view-header .subtitle {
+      font-size: 12px;
+      font-weight: normal;
+      opacity: 0.85;
+    }
   </style>
 </head>
 <body>
 
-<!-- ════ AUTH MODAL ════ -->
-<div id="auth-modal" style="display:none;">
-  <div class="auth-box" id="auth-box">
+<!-- ════ BACKEND ACCESS BUTTON (RIGHT SIDE) ════ -->
+<button id="backend-access-btn" onclick="openBackendAuth()" title="Backend Access">
+  <span class="btn-icon">⚙️</span>
+  Backend
+</button>
 
+<!-- ════ AUTH MODAL ════ -->
+<div id="auth-modal">
+  <div class="auth-box" id="auth-box">
+    <button class="auth-close-btn" onclick="closeAuthModal()" title="Close">✕</button>
     <!-- Steps Indicator -->
     <div class="steps-indicator">
       <div class="step-dot active" id="dot1"></div>
@@ -316,7 +370,7 @@
     <div class="auth-step" id="step2">
       <span class="auth-logo">📧</span>
       <h3>Verify OTP</h3>
-      <div class="auth-email-display" id="otp-email-display">nareshchavan86@gmail.com</div>
+      <div class="auth-email-display" id="otp-email-display"></div>
       <p class="auth-sub">A 6-digit verification code has been sent.<br>Check your email inbox.</p>
       <input type="text" class="otp-input" id="otp-input"
              placeholder="000000" maxlength="6"
@@ -340,7 +394,6 @@
       </p>
       <button class="auth-btn" style="background:#888;" onclick="backToStep1()">← Try Different Email</button>
     </div>
-
   </div>
 </div>
 
@@ -353,6 +406,12 @@
 </div>
 
 <div class="page-wrapper">
+
+  <!-- ════ CLIENT VIEW HEADER ════ -->
+  <div class="client-view-header" id="client-header">
+    📊 Area Statement & Scheme 33 7(B) — Interactive Calculator
+    <br><span class="subtitle">Enter values in green cells to calculate automatically</span>
+  </div>
 
   <!-- ════ AREA STATEMENT ════ -->
   <div class="table-container">
@@ -637,15 +696,14 @@
 
   <!-- ════ BACKEND SECTION ════ -->
   <div id="backend-section">
-
     <!-- Backend content (hidden until auth) -->
     <div id="backend-content">
       <div class="table-container">
         <div class="backend-topbar">
           <div class="backend-notice" style="flex:1; margin-right:10px; margin-bottom:0;">
-            ⚙ BACKEND DATA — Not for Client View
+            ⚙️ BACKEND DATA — Not for Client View
           </div>
-          <div class="user-badge">✅ <span id="logged-email">nareshchavan86@gmail.com</span></div>
+          <div class="user-badge">✅ <span id="logged-email"></span></div>
           <button id="lock-btn" onclick="lockBackend()">🔒 Logout</button>
         </div>
 
@@ -740,25 +798,48 @@
       </div>
     </div>
   </div>
-
 </div>
 
 <script>
   /* ══════════════════════════════════════════════
      CONFIGURATION
-  ══════════════════════════════════════════════ */
-  const AUTHORIZED_EMAIL = 'nareshchavan86@gmail.com';
+     ══════════════════════════════════════════════ */
+  const AUTHORIZED_EMAILS = ['nareshchavan86@gmail.com']; // Add more emails here as needed
   const MAX_OTP_ATTEMPTS = 3;
   const LOCKOUT_SECS     = 60;
   const OTP_VALID_SECS   = 300; // 5 minutes
 
-  let currentOTP      = '';
+  let currentOTP     = '';
   let otpAttempts     = 0;
   let otpTimer        = null;
   let otpCountdown    = null;
   let lockedOut       = false;
   let lockoutInterval = null;
   let otpExpiry       = 0;
+  let currentAuthEmail = '';
+
+  /* ── Open Backend Auth Modal ── */
+  function openBackendAuth() {
+    // Check if already authenticated
+    if(sessionStorage.getItem('backend_auth') === 'true' &&
+       AUTHORIZED_EMAILS.includes(sessionStorage.getItem('backend_email'))) {
+      // Already authenticated, just show backend
+      document.getElementById('backend-content').style.display = 'block';
+      document.getElementById('logged-email').textContent = sessionStorage.getItem('backend_email');
+      document.getElementById('backend-access-btn').style.display = 'none';
+      // Scroll to backend
+      document.getElementById('backend-section').scrollIntoView({behavior:'smooth'});
+      return;
+    }
+    document.getElementById('auth-modal').style.display = 'flex';
+    document.getElementById('email-input').focus();
+  }
+
+  /* ── Close Auth Modal ── */
+  function closeAuthModal() {
+    document.getElementById('auth-modal').style.display = 'none';
+    backToStep1();
+  }
 
   /* ── Generate random 6-digit OTP ── */
   function generateOTP() {
@@ -798,7 +879,6 @@
     if(lockedOut) return;
     const emailEl = document.getElementById('email-input');
     const email   = emailEl.value.trim().toLowerCase();
-
     hideMsg('email-msg');
     emailEl.classList.remove('error','success');
 
@@ -807,15 +887,14 @@
       showMsg('email-msg', '⚠ Please enter your email address.', 'error');
       return;
     }
-
     if(!isValidEmail(email)) {
       emailEl.classList.add('error');
       showMsg('email-msg', '⚠ Please enter a valid email address.', 'error');
       return;
     }
 
-    // Check authorization
-    if(email !== AUTHORIZED_EMAIL) {
+    // Check authorization against the list
+    if(!AUTHORIZED_EMAILS.includes(email)) {
       emailEl.classList.add('error');
       document.getElementById('denied-email-show').textContent = email;
       showStep('step3-denied');
@@ -824,20 +903,18 @@
     }
 
     // Authorized — generate and "send" OTP
+    currentAuthEmail = email;
     emailEl.classList.add('success');
     currentOTP = generateOTP();
     otpExpiry  = Date.now() + OTP_VALID_SECS * 1000;
     otpAttempts = 0;
 
-    // Show OTP in console for testing (remove in production)
     console.log('%c🔑 OTP for testing: ' + currentOTP, 'color: green; font-size: 18px; font-weight: bold;');
 
-    // Show OTP in alert for demo (since no email server)
     setTimeout(() => {
-      alert('📧 OTP Sent!\n\nYour verification code is:\n\n' + currentOTP + '\n\n(In production this would be sent to ' + AUTHORIZED_EMAIL + ')');
+      alert('📧 OTP Sent!\n\nYour verification code is:\n\n' + currentOTP + '\n\n(In production this would be sent to ' + email + ')');
     }, 100);
 
-    // Move to step 2
     document.getElementById('otp-email-display').textContent = email;
     showStep('step2');
     updateDots(1, 1, 0);
@@ -863,7 +940,7 @@
         clearInterval(otpCountdown);
         countEl.textContent = '00:00';
         showMsg('otp-msg', '⏰ OTP expired. Please request a new code.', 'error');
-        currentOTP = ''; // Invalidate
+        currentOTP = '';
       }
     }, 1000);
   }
@@ -873,7 +950,6 @@
     if(lockedOut) return;
     const otpEl  = document.getElementById('otp-input');
     const entered = otpEl.value.trim();
-
     hideMsg('otp-msg');
     otpEl.classList.remove('error');
 
@@ -882,7 +958,6 @@
       showMsg('otp-msg', '⚠ Please enter the 6-digit code.', 'error');
       return;
     }
-
     if(!currentOTP) {
       showMsg('otp-msg', '⏰ OTP has expired. Please request a new one.', 'error');
       return;
@@ -900,16 +975,17 @@
       setTimeout(() => {
         document.getElementById('auth-modal').style.display = 'none';
         document.getElementById('backend-content').style.display = 'block';
-        document.getElementById('logged-email').textContent = AUTHORIZED_EMAIL;
+        document.getElementById('logged-email').textContent = currentAuthEmail;
+        document.getElementById('backend-access-btn').style.display = 'none';
         sessionStorage.setItem('backend_auth', 'true');
-        sessionStorage.setItem('backend_email', AUTHORIZED_EMAIL);
+        sessionStorage.setItem('backend_email', currentAuthEmail);
+        // Scroll to backend
+        document.getElementById('backend-section').scrollIntoView({behavior:'smooth'});
       }, 800);
     } else {
       otpAttempts++;
       otpEl.classList.add('error');
       otpEl.value = '';
-
-      // Shake animation
       document.getElementById('auth-box').classList.add('shake');
       setTimeout(() => document.getElementById('auth-box').classList.remove('shake'), 400);
 
@@ -932,10 +1008,8 @@
     otpAttempts = 0;
     document.getElementById('otp-input').value = '';
     hideMsg('otp-msg');
-
     console.log('%c🔑 New OTP: ' + currentOTP, 'color: blue; font-size: 18px; font-weight: bold;');
     alert('📧 New OTP Sent!\n\nYour new verification code is:\n\n' + currentOTP);
-
     startOTPCountdown();
     showMsg('otp-msg', '✅ New code sent! Check your email.', 'success');
   }
@@ -961,7 +1035,6 @@
     const timerEl = document.getElementById('lockout-timer');
     overlay.style.display = 'flex';
     timerEl.textContent = secs;
-
     lockoutInterval = setInterval(() => {
       secs--;
       timerEl.textContent = secs;
@@ -975,32 +1048,35 @@
     }, 1000);
   }
 
-  /* ── Lock Backend ── */
+  /* ── Lock Backend (Logout) ── */
   function lockBackend() {
     sessionStorage.removeItem('backend_auth');
     sessionStorage.removeItem('backend_email');
     document.getElementById('backend-content').style.display = 'none';
-    document.getElementById('auth-modal').style.display = 'flex';
-    backToStep1();
+    document.getElementById('backend-access-btn').style.display = 'flex';
+    currentAuthEmail = '';
   }
 
   /* ── Check Session on Load ── */
   window.addEventListener('load', () => {
     if(sessionStorage.getItem('backend_auth') === 'true' &&
-       sessionStorage.getItem('backend_email') === AUTHORIZED_EMAIL) {
-      document.getElementById('auth-modal').style.display = 'none';
+       AUTHORIZED_EMAILS.includes(sessionStorage.getItem('backend_email'))) {
+      // Already authenticated in this session
       document.getElementById('backend-content').style.display = 'block';
-      document.getElementById('logged-email').textContent = AUTHORIZED_EMAIL;
+      document.getElementById('logged-email').textContent = sessionStorage.getItem('backend_email');
+      document.getElementById('backend-access-btn').style.display = 'none';
     } else {
-      document.getElementById('auth-modal').style.display = 'flex';
-      document.getElementById('email-input').focus();
+      // Client view — no auth modal on load, backend hidden, button visible
+      document.getElementById('auth-modal').style.display = 'none';
+      document.getElementById('backend-content').style.display = 'none';
+      document.getElementById('backend-access-btn').style.display = 'flex';
     }
     calcArea();
   });
 
   /* ══════════════════════════════════════════════
      CALCULATIONS ENGINE
-  ══════════════════════════════════════════════ */
+     ══════════════════════════════════════════════ */
   const F = 10.764;
   let _e3=0,_e6=0,_d3=0,_d6=0;
   let _d5=0,_e5=0,_d8=0,_e8=0,_d9=0,_e9=0;
