@@ -141,8 +141,10 @@
   }
   .project-card:hover .play-icon { opacity: 1; transform: scale(1.1); }
   .project-body { padding: 1.5rem; }
-  .project-actions { display: flex; gap: 0.5rem; margin-top: 1rem; flex-wrap: wrap; }
+  .project-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap; }
   .btn-sm { padding: 8px 15px; font-size: 0.75rem; border-radius: 50px; }
+  .project-info-text { display: flex; align-items: center; gap: 5px; color: var(--text-muted); font-size: 0.8rem; margin-top: 1.2rem; font-weight: 500; }
+  .btn-accent { background: var(--accent); color: #fff; box-shadow: 0 4px 15px rgba(0, 200, 83, 0.3); }
 
   /* ===== VIDEO MODAL ===== */
   .video-modal {
@@ -307,9 +309,10 @@
         <div class="project-tags"><span class="tag">Google Sheets</span><span class="tag">Apps Script</span></div>
         <h3>Google Calendar Event Creation</h3>
         <p>Automatic scheduling of events in Google Calendar along with sending emails like invites and reminders.</p>
+        <div class="project-info-text">⬇ Fill Out the Project Demo and Check</div>
         <div class="project-actions">
-          <button class="btn btn-primary btn-sm" onclick="openVideoModal('Calendar Automation','Automated event creation with email notifications','https://www.youtube.com/embed/dQw4w9WgXcQ')">Watch Demo</button>
-          <button class="btn btn-outline btn-sm" onclick="openProjectForm('Google Calendar Event Creation')">Project Form</button>
+          <button class="btn btn-primary btn-sm" onclick="openProjectForm('Google Calendar Event Creation')">Form Link</button>
+          <button class="btn btn-accent btn-sm" onclick="scrollToDataView()">Form Data View</button>
         </div>
       </div>
     </div>
@@ -320,9 +323,10 @@
         <div class="project-tags"><span class="tag">Google Sheets</span><span class="tag">Automation</span></div>
         <h3>Cashflow Management System</h3>
         <p>Complete Cashflow database tracking income and expenses with automated real-time balancing.</p>
+        <div class="project-info-text">⬇ Fill Out the Project Demo and Check</div>
         <div class="project-actions">
-          <button class="btn btn-primary btn-sm" onclick="openVideoModal('Cashflow Form with Database','Complete Cashflow database in Google Sheets','https://www.youtube.com/embed/dQw4w9WgXcQ')">Watch Demo</button>
-          <button class="btn btn-outline btn-sm" onclick="openProjectForm('Cashflow Management System')">Project Form</button>
+          <button class="btn btn-primary btn-sm" onclick="openProjectForm('Cashflow Management System')">Form Link</button>
+          <button class="btn btn-accent btn-sm" onclick="scrollToDataView()">Form Data View</button>
         </div>
       </div>
     </div>
@@ -333,9 +337,10 @@
         <div class="project-tags"><span class="tag">Google Sheets</span><span class="tag">Automation</span></div>
         <h3>Purchase Order FMS</h3>
         <p>Automated Purchase Order management system for streamlining procurement and vendor tracking.</p>
+        <div class="project-info-text">⬇ Fill Out the Project Demo and Check</div>
         <div class="project-actions">
-          <button class="btn btn-primary btn-sm" onclick="openVideoModal('Purchase Form with FMS','Complete Purchase FMS database in Google Sheets','https://www.youtube.com/embed/dQw4w9WgXcQ')">Watch Demo</button>
-          <button class="btn btn-outline btn-sm" onclick="openProjectForm('Purchase Order FMS')">Project Form</button>
+          <button class="btn btn-primary btn-sm" onclick="openProjectForm('Purchase Order FMS')">Form Link</button>
+          <button class="btn btn-accent btn-sm" onclick="scrollToDataView()">Form Data View</button>
         </div>
       </div>
     </div>
@@ -346,9 +351,10 @@
         <div class="project-tags"><span class="tag">Google Sheets</span><span class="tag">Automation</span></div>
         <h3>Sales FMS Database</h3>
         <p>Comprehensive Sales Financial Management System to track revenue pipelines and conversion rates.</p>
+        <div class="project-info-text">⬇ Fill Out the Project Demo and Check</div>
         <div class="project-actions">
-          <button class="btn btn-primary btn-sm" onclick="openVideoModal('Sales FMS','Complete Sales FMS database in Google Sheets','https://www.youtube.com/embed/dQw4w9WgXcQ')">Watch Demo</button>
-          <button class="btn btn-outline btn-sm" onclick="openProjectForm('Sales FMS Database')">Project Form</button>
+          <button class="btn btn-primary btn-sm" onclick="openProjectForm('Sales FMS Database')">Form Link</button>
+          <button class="btn btn-accent btn-sm" onclick="scrollToDataView()">Form Data View</button>
         </div>
       </div>
     </div>
@@ -359,9 +365,10 @@
         <div class="project-tags"><span class="tag">Google Sheets</span><span class="tag">Automation</span></div>
         <h3>Order Workflow Automation</h3>
         <p>End-to-end tracking from initial order placement to final service delivery (Golden Service).</p>
+        <div class="project-info-text">⬇ Fill Out the Project Demo and Check</div>
         <div class="project-actions">
-          <button class="btn btn-primary btn-sm" onclick="openVideoModal('Order to Golden Service FMS','Complete Order Process FMS database in Google Sheets','https://www.youtube.com/embed/dQw4w9WgXcQ')">Watch Demo</button>
-          <button class="btn btn-outline btn-sm" onclick="openProjectForm('Order Workflow Automation')">Project Form</button>
+          <button class="btn btn-primary btn-sm" onclick="openProjectForm('Order Workflow Automation')">Form Link</button>
+          <button class="btn btn-accent btn-sm" onclick="scrollToDataView()">Form Data View</button>
         </div>
       </div>
     </div>
@@ -372,9 +379,10 @@
         <div class="project-tags"><span class="tag">Google Sheets</span><span class="tag">Automation</span></div>
         <h3>Challan Management System</h3>
         <p>Digital challan generation and tracking system with automated database updates.</p>
+        <div class="project-info-text">⬇ Fill Out the Project Demo and Check</div>
         <div class="project-actions">
-          <button class="btn btn-primary btn-sm" onclick="openVideoModal('Challan Manager FMS','Complete Challan Process FMS database in Google Sheets','https://www.youtube.com/embed/dQw4w9WgXcQ')">Watch Demo</button>
-          <button class="btn btn-outline btn-sm" onclick="openProjectForm('Challan Management System')">Project Form</button>
+          <button class="btn btn-primary btn-sm" onclick="openProjectForm('Challan Management System')">Form Link</button>
+          <button class="btn btn-accent btn-sm" onclick="scrollToDataView()">Form Data View</button>
         </div>
       </div>
     </div>
@@ -385,9 +393,10 @@
         <div class="project-tags"><span class="tag">Google Sheets</span><span class="tag">Automation</span></div>
         <h3>Vendor Onboarding Portal</h3>
         <p>Automated onboarding workflow for new vendors including documentation and approval tracking.</p>
+        <div class="project-info-text">⬇ Fill Out the Project Demo and Check</div>
         <div class="project-actions">
-          <button class="btn btn-primary btn-sm" onclick="openVideoModal('Vendor Onboarding FMS','Complete Vendor Process FMS database in Google Sheets','https://www.youtube.com/embed/dQw4w9WgXcQ')">Watch Demo</button>
-          <button class="btn btn-outline btn-sm" onclick="openProjectForm('Vendor Onboarding Portal')">Project Form</button>
+          <button class="btn btn-primary btn-sm" onclick="openProjectForm('Vendor Onboarding Portal')">Form Link</button>
+          <button class="btn btn-accent btn-sm" onclick="scrollToDataView()">Form Data View</button>
         </div>
       </div>
     </div>
@@ -398,9 +407,10 @@
         <div class="project-tags"><span class="tag">Google Sheets</span><span class="tag">Automation</span></div>
         <h3>Project Management System</h3>
         <p>Integrated PMS for tracking project milestones, resource allocation, and timelines.</p>
+        <div class="project-info-text">⬇ Fill Out the Project Demo and Check</div>
         <div class="project-actions">
-          <button class="btn btn-primary btn-sm" onclick="openVideoModal('PMS FMS','Complete PMS FMS database in Google Sheets','https://www.youtube.com/embed/dQw4w9WgXcQ')">Watch Demo</button>
-          <button class="btn btn-outline btn-sm" onclick="openProjectForm('Project Management System')">Project Form</button>
+          <button class="btn btn-primary btn-sm" onclick="openProjectForm('Project Management System')">Form Link</button>
+          <button class="btn btn-accent btn-sm" onclick="scrollToDataView()">Form Data View</button>
         </div>
       </div>
     </div>
@@ -411,9 +421,10 @@
         <div class="project-tags"><span class="tag">Google Sheets</span><span class="tag">Automation</span></div>
         <h3>Site Issue Tracker</h3>
         <p>Field-to-office reporting system to log and resolve site issues in real-time.</p>
+        <div class="project-info-text">⬇ Fill Out the Project Demo and Check</div>
         <div class="project-actions">
-          <button class="btn btn-primary btn-sm" onclick="openVideoModal('Issue at Site FMS','Complete Issue at site FMS database in Google Sheets','https://www.youtube.com/embed/dQw4w9WgXcQ')">Watch Demo</button>
-          <button class="btn btn-outline btn-sm" onclick="openProjectForm('Site Issue Tracker')">Project Form</button>
+          <button class="btn btn-primary btn-sm" onclick="openProjectForm('Site Issue Tracker')">Form Link</button>
+          <button class="btn btn-accent btn-sm" onclick="scrollToDataView()">Form Data View</button>
         </div>
       </div>
     </div>
@@ -424,9 +435,10 @@
         <div class="project-tags"><span class="tag">Google Sheets</span><span class="tag">Automation</span></div>
         <h3>Multi-Dept Billing System</h3>
         <p>Centralized billing database handling multiple departments with automated summaries.</p>
+        <div class="project-info-text">⬇ Fill Out the Project Demo and Check</div>
         <div class="project-actions">
-          <button class="btn btn-primary btn-sm" onclick="openVideoModal('Bill FMS (All Department)','Complete Bill FMS database in Google Sheets','https://www.youtube.com/embed/dQw4w9WgXcQ')">Watch Demo</button>
-          <button class="btn btn-outline btn-sm" onclick="openProjectForm('Multi-Dept Billing System')">Project Form</button>
+          <button class="btn btn-primary btn-sm" onclick="openProjectForm('Multi-Dept Billing System')">Form Link</button>
+          <button class="btn btn-accent btn-sm" onclick="scrollToDataView()">Form Data View</button>
         </div>
       </div>
     </div>
@@ -437,9 +449,10 @@
         <div class="project-tags"><span class="tag">Google Sheets</span><span class="tag">Automation</span></div>
         <h3>Approval Workflow System</h3>
         <p>Automated approval chain for invoices and bills with email notifications for stakeholders.</p>
+        <div class="project-info-text">⬇ Fill Out the Project Demo and Check</div>
         <div class="project-actions">
-          <button class="btn btn-primary btn-sm" onclick="openVideoModal('Bill Approval FMS (All Department)','Complete Bill Approval FMS database in Google Sheets','https://www.youtube.com/embed/dQw4w9WgXcQ')">Watch Demo</button>
-          <button class="btn btn-outline btn-sm" onclick="openProjectForm('Approval Workflow System')">Project Form</button>
+          <button class="btn btn-primary btn-sm" onclick="openProjectForm('Approval Workflow System')">Form Link</button>
+          <button class="btn btn-accent btn-sm" onclick="scrollToDataView()">Form Data View</button>
         </div>
       </div>
     </div>
@@ -450,9 +463,10 @@
         <div class="project-tags"><span class="tag">Google Sheets</span><span class="tag">Automation</span></div>
         <h3>Daily Production Reporter</h3>
         <p>Automated data collection for daily production outputs with visual trend analysis.</p>
+        <div class="project-info-text">⬇ Fill Out the Project Demo and Check</div>
         <div class="project-actions">
-          <button class="btn btn-primary btn-sm" onclick="openVideoModal('Daily Production Report','Complete Daily Production Report database in Google Sheets','https://www.youtube.com/embed/dQw4w9WgXcQ')">Watch Demo</button>
-          <button class="btn btn-outline btn-sm" onclick="openProjectForm('Daily Production Reporter')">Project Form</button>
+          <button class="btn btn-primary btn-sm" onclick="openProjectForm('Daily Production Reporter')">Form Link</button>
+          <button class="btn btn-accent btn-sm" onclick="scrollToDataView()">Form Data View</button>
         </div>
       </div>
     </div>
@@ -463,9 +477,10 @@
         <div class="project-tags"><span class="tag">Google Docs</span><span class="tag">Apps Script</span></div>
         <h3>Invoice Generator System</h3>
         <p>Automated invoice and proposal generation from Sheets data with branded templates.</p>
+        <div class="project-info-text">⬇ Fill Out the Project Demo and Check</div>
         <div class="project-actions">
-          <button class="btn btn-primary btn-sm" onclick="openVideoModal('Quotation','Automated Quotation generation','https://www.youtube.com/embed/dQw4w9WgXcQ')">Watch Demo</button>
-          <button class="btn btn-outline btn-sm" onclick="openProjectForm('Invoice Generator System')">Project Form</button>
+          <button class="btn btn-primary btn-sm" onclick="openProjectForm('Invoice Generator System')">Form Link</button>
+          <button class="btn btn-accent btn-sm" onclick="scrollToDataView()">Form Data View</button>
         </div>
       </div>
     </div>
@@ -476,9 +491,10 @@
         <div class="project-tags"><span class="tag">Excel</span><span class="tag">VBA</span></div>
         <h3>Financial Reporting Dashboard</h3>
         <p>Multi-sheet financial model with VBA macros for automated P&L and cash flow reporting.</p>
+        <div class="project-info-text">⬇ Fill Out the Project Demo and Check</div>
         <div class="project-actions">
-          <button class="btn btn-primary btn-sm" onclick="openVideoModal('Electronics Sales Dashboard','Power Query based sales report','https://www.youtube.com/embed/dQw4w9WgXcQ')">Watch Demo</button>
-          <button class="btn btn-outline btn-sm" onclick="openProjectForm('Financial Reporting Dashboard')">Project Form</button>
+          <button class="btn btn-primary btn-sm" onclick="openProjectForm('Financial Reporting Dashboard')">Form Link</button>
+          <button class="btn btn-accent btn-sm" onclick="scrollToDataView()">Form Data View</button>
         </div>
       </div>
     </div>
@@ -489,9 +505,10 @@
         <div class="project-tags"><span class="tag">Excel</span><span class="tag">Power Query</span></div>
         <h3>HR Analytics Workbook</h3>
         <p>Employee data consolidation with Power Query ETL and attrition analysis dashboards.</p>
+        <div class="project-info-text">⬇ Fill Out the Project Demo and Check</div>
         <div class="project-actions">
-          <button class="btn btn-primary btn-sm" onclick="openVideoModal('Coffee Sales Dashboard','Power Query ETL for Coffee Outlet data','https://www.youtube.com/embed/dQw4w9WgXcQ')">Watch Demo</button>
-          <button class="btn btn-outline btn-sm" onclick="openProjectForm('HR Analytics Workbook')">Project Form</button>
+          <button class="btn btn-primary btn-sm" onclick="openProjectForm('HR Analytics Workbook')">Form Link</button>
+          <button class="btn btn-accent btn-sm" onclick="scrollToDataView()">Form Data View</button>
         </div>
       </div>
     </div>
@@ -502,9 +519,10 @@
         <div class="project-tags"><span class="tag">Power BI</span><span class="tag">DAX</span></div>
         <h3>E-Commerce Sales Dashboard</h3>
         <p>Interactive Power BI report with drill-through pages, custom DAX measures, and RLS.</p>
+        <div class="project-info-text">⬇ Fill Out the Project Demo and Check</div>
         <div class="project-actions">
-          <button class="btn btn-primary btn-sm" onclick="openVideoModal('Global Sales Report','Interactive Power BI report','https://www.youtube.com/embed/dQw4w9WgXcQ')">Watch Demo</button>
-          <button class="btn btn-outline btn-sm" onclick="openProjectForm('E-Commerce Sales Dashboard')">Project Form</button>
+          <button class="btn btn-primary btn-sm" onclick="openProjectForm('E-Commerce Sales Dashboard')">Form Link</button>
+          <button class="btn btn-accent btn-sm" onclick="scrollToDataView()">Form Data View</button>
         </div>
       </div>
     </div>
@@ -729,6 +747,10 @@
   function openProjectForm(title) {
     document.getElementById('formProjectType').value = title;
     document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  function scrollToDataView() {
+    document.getElementById('dataview').scrollIntoView({ behavior: 'smooth' });
   }
 
   function saveToLocalStorage(data) {
