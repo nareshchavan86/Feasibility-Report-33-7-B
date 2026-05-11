@@ -159,12 +159,9 @@
     background: rgba(15, 23, 42, 0.8); color: white; font-family: inherit;
   }
 
-  /* ===== DATA VIEW TABLE ===== */
-  .dataview-table-container { width: 100%; max-width: 1200px; overflow-x: auto; margin-top: 2rem; }
-  .dataview-table { width: 100%; border-collapse: collapse; background: var(--card-bg); backdrop-filter: blur(12px); border-radius: 15px; overflow: hidden; border: 1px solid rgba(255,255,255,0.08); }
-  .dataview-table th, .dataview-table td { padding: 1rem; text-align: left; border-bottom: 1px solid rgba(255,255,255,0.05); }
-  .dataview-table th { background: rgba(26,115,232,0.2); color: var(--primary); font-weight: 600; text-transform: uppercase; font-size: 0.8rem; }
-  .dataview-table tr:last-child td { border-bottom: none; }
+  /* ===== DATA VIEW IFRAME ===== */
+  .dataview-container { width: 100%; max-width: 1200px; height: 800px; margin-top: 2rem; border-radius: 24px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); background: var(--card-bg); backdrop-filter: blur(12px); }
+  .dataview-container iframe { width: 100%; height: 100%; border: none; }
 
   /* ===== BUTTONS ===== */
   .btn { padding: 12px 30px; border-radius: 50px; font-weight: 600; text-decoration: none; transition: 0.3s; display: inline-block; cursor: pointer; border:none; }
@@ -576,22 +573,8 @@
     <h2>Form Data View</h2>
     <p style="color:var(--text-muted)">All data collected from the project forms</p>
   </div>
-  <div class="dataview-table-container">
-    <table class="dataview-table">
-      <thead>
-        <tr>
-          <th>Timestamp</th>
-          <th>Name</th>
-          <th>Email</th>
-          <th>Project Type</th>
-          <th>Link/Upload</th>
-          <th>Message</th>
-        </tr>
-      </thead>
-      <tbody id="dataviewBody">
-        <!-- Data will be populated here -->
-      </tbody>
-    </table>
+  <div class="dataview-container">
+    <iframe src="https://script.google.com/macros/s/AKfycbwv3Y5NIEslEzGnBuCQqaqpu7WGeHRLy_m0KyVRe2Ru7js4ny0UybOnrZG-PL2--Z3yZQ/exec" allowfullscreen></iframe>
   </div>
 </section>
 
@@ -731,42 +714,7 @@
     let submissions = JSON.parse(localStorage.getItem('submissions') || '[]');
     submissions.push(data);
     localStorage.setItem('submissions', JSON.stringify(submissions));
-    renderDataView();
   }
-
-  function renderDataView() {
-    const submissions = JSON.parse(localStorage.getItem('submissions') || '[]');
-    const body = document.getElementById('dataviewBody');
-    body.innerHTML = '';
-
-    if (submissions.length === 0) {
-      body.innerHTML = '<tr><td colspan="6" style="text-align:center">No submissions yet</td></tr>';
-      return;
-    }
-
-    submissions.forEach(sub => {
-      const tr = document.createElement('tr');
-      ['timestamp', 'name', 'email', 'projectType', 'linkUpload', 'message'].forEach(key => {
-        const td = document.createElement('td');
-        const val = sub[key] || '';
-        if (key === 'linkUpload' && val.startsWith('http')) {
-          const a = document.createElement('a');
-          a.href = val;
-          a.textContent = 'View Link';
-          a.target = '_blank';
-          a.style.color = 'var(--primary)';
-          td.appendChild(a);
-        } else {
-          td.textContent = val;
-        }
-        tr.appendChild(td);
-      });
-      body.appendChild(tr);
-    });
-  }
-
-  // Initial render
-  window.addEventListener('DOMContentLoaded', renderDataView);
 
   async function submitToGoogleSheets(e) {
     e.preventDefault();
@@ -795,6 +743,10 @@
       });
 
       saveToLocalStorage({ timestamp, name, email, projectType, linkUpload, message });
+
+      // Refresh iframe if possible or just show alert
+      const iframe = document.querySelector('#dataview iframe');
+      if (iframe) iframe.src = iframe.src;
 
       alert('✅ Message Sent Successfully!');
       e.target.reset();
