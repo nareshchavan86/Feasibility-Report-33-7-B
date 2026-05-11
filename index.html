@@ -1,1367 +1,835 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Feasibility Report — Scheme 33(7)B</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
-  <style>
-    :root {
-      --navy:   #0D1B2A;
-      --blue:   #1A3A5C;
-      --mid:    #2563A8;
-      --accent: #1D7A8C;
-      --gold:   #C8972A;
-      --green:  #17784A;
-      --green-light: #E6F7EF;
-      --yellow: #FFF8DC;
-      --yellow-border: #D4A017;
-      --orange: #E87722;
-      --orange-light: #FEF3E8;
-      --red:    #C0392B;
-      --white:  #FFFFFF;
-      --off:    #F4F6FA;
-      --border: #D1D9E6;
-      --text:   #1A2434;
-      --muted:  #6B7A99;
-      --shadow: 0 2px 12px rgba(13,27,42,0.10);
-      --shadow-lg: 0 8px 32px rgba(13,27,42,0.16);
-      --radius: 10px;
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Infinity Automation Systems | Data Automation Expert</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  :root {
+    --primary: #1a73e8;
+    --primary-dark: #0d47a1;
+    --accent: #00c853;
+    --dark: #05050a;
+    --darker: #0a0a1a;
+    --card-bg: rgba(30, 41, 59, 0.6);
+    --text: #e2e8f0;
+    --text-muted: #94a3b8;
+    --gradient1: linear-gradient(135deg, #1a73e8, #00c853);
+  }
+  html { scroll-behavior: smooth; font-size: 16px; }
+  body {
+    font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    background: var(--dark);
+    color: var(--text);
+    min-height: 100vh;
+    width: 100%;
+    overflow-x: hidden;
+  }
 
-    * { margin:0; padding:0; box-sizing:border-box; }
+  /* ===== 3D CANVAS ===== */
+  #canvas-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -1;
+    pointer-events: none;
+  }
 
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: #EEF2F8;
-      color: var(--text);
-      font-size: 13px;
-      min-height: 100vh;
-    }
+  /* ===== NAV ===== */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+    background: rgba(10, 10, 26, 0.8);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding: 0 clamp(1rem, 4vw, 2rem);
+    display: flex; align-items: center; justify-content: space-between;
+    height: 64px;
+  }
+  .nav-brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+  .nav-brand img { height: 40px; width: auto; border-radius: 8px; }
+  .brand-name {
+    font-weight: 700; font-size: 1rem;
+    background: var(--gradient1); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  }
+  .nav-links { display: flex; gap: 1.5rem; list-style: none; }
+  .nav-links a { color: var(--text-muted); text-decoration: none; font-size: 0.9rem; transition: 0.3s; }
+  .nav-links a:hover { color: #fff; }
 
-    /* ─── PAGE HEADER ─── */
-    .page-header {
-      background: linear-gradient(135deg, var(--navy) 0%, var(--blue) 60%, var(--mid) 100%);
-      color: #fff;
-      padding: 28px 40px 24px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-      position: relative;
-      overflow: hidden;
-    }
-    .page-header::before {
-      content: '';
-      position: absolute; right:-60px; top:-40px;
-      width: 240px; height: 240px;
-      background: rgba(255,255,255,0.04);
-      border-radius: 50%;
-    }
-    .page-header::after {
-      content: '';
-      position: absolute; right:60px; bottom:-80px;
-      width: 180px; height: 180px;
-      background: rgba(255,255,255,0.03);
-      border-radius: 50%;
-    }
-    .header-left h1 {
-      font-size: 22px; font-weight: 700; letter-spacing: -0.3px;
-      line-height: 1.2;
-    }
-    .header-left .subtitle {
-      font-size: 12px; color: rgba(255,255,255,0.65);
-      margin-top: 4px; font-weight: 400;
-    }
-    .header-right {
-      display: flex; align-items: center; gap: 12px; flex-shrink: 0;
-    }
-    .rr-block {
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.2);
-      border-radius: 8px;
-      padding: 10px 16px;
-      display: flex; align-items: center; gap: 10px;
-    }
-    .rr-block label {
-      font-size: 11px; font-weight: 600; text-transform: uppercase;
-      letter-spacing: 1px; color: rgba(255,255,255,0.7);
-    }
-    .rr-block input {
-      background: rgba(255,255,255,0.15);
-      border: 1px solid rgba(255,255,255,0.3);
-      border-radius: 6px;
-      color: #fff; font-family: 'DM Mono', monospace;
-      font-size: 14px; font-weight: 500;
-      padding: 6px 10px; width: 120px;
-      outline: none; text-align: center;
-    }
-    .rr-block input::placeholder { color: rgba(255,255,255,0.4); font-size:12px;}
-    .rr-block input:focus { border-color: rgba(255,255,255,0.6); background: rgba(255,255,255,0.2); }
+  .hamburger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; }
+  .hamburger span { width: 24px; height: 2px; background: #fff; }
+  @media (max-width: 768px) {
+    .nav-links { display: none; position: fixed; top: 64px; left: 0; right: 0; background: rgba(10,10,26,0.95); flex-direction: column; padding: 2rem; gap: 1rem; height: 100vh; }
+    .nav-links.open { display: flex; }
+    .hamburger { display: flex; }
+  }
 
-    /* ─── BACKEND BUTTON ─── */
-    #backend-access-btn {
-      position: fixed; right:0; top:50%;
-      transform: translateY(-50%);
-      writing-mode: vertical-rl;
-      background: linear-gradient(180deg, var(--navy), var(--mid));
-      color: #fff; border: none;
-      border-radius: 8px 0 0 8px;
-      padding: 18px 10px;
-      font-size: 12px; font-weight: 600;
-      cursor: pointer; z-index: 10000;
-      letter-spacing: 1px;
-      box-shadow: -3px 0 16px rgba(0,0,0,0.25);
-      transition: all 0.25s;
-      display: flex; align-items: center; gap: 8px;
-    }
-    #backend-access-btn:hover { background: linear-gradient(180deg, #06101A, var(--navy)); padding-right: 16px; }
+  /* ===== HERO ===== */
+  .hero {
+    height: 100vh;
+    display: flex; align-items: center; justify-content: center;
+    text-align: center; padding: 0 2rem;
+  }
+  .hero-content {
+    max-width: 850px;
+    z-index: 10;
+    animation: fadeIn 1.5s ease-out;
+  }
+  .hero h1 { font-size: clamp(2.2rem, 7vw, 4rem); font-weight: 800; margin-bottom: 1rem; line-height: 1.1; }
+  .hero h1 .highlight { background: var(--gradient1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .hero p { color: var(--text-muted); font-size: 1.2rem; margin-bottom: 2.5rem; max-width: 650px; margin-inline: auto; line-height: 1.6; }
 
-    /* ─── LAYOUT ─── */
-    .page-body {
-      max-width: 1400px;
-      margin: 0 auto;
-      padding: 28px 28px 60px;
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 24px;
-    }
+  /* ===== GLASS UI ELEMENTS ===== */
+  .glass-card {
+    background: var(--card-bg);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 24px;
+    transition: 0.3s ease;
+  }
 
-    /* ─── CARD ─── */
-    .card {
-      background: var(--white);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      border: 1px solid var(--border);
-      overflow: hidden;
-    }
-    .card-header {
-      display: flex; align-items: center; gap: 10px;
-      padding: 14px 20px;
-      border-bottom: 1px solid var(--border);
-      background: var(--off);
-    }
-    .card-header .dot {
-      width: 10px; height: 10px; border-radius: 50%;
-      background: var(--mid); flex-shrink: 0;
-    }
-    .card-header h3 {
-      font-size: 13px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.8px;
-      color: var(--navy);
-    }
-    .card-body { overflow-x: auto; }
+  section {
+    padding: clamp(4rem, 10vw, 8rem) 2rem;
+    display: flex; flex-direction: column; align-items: center;
+    position: relative;
+  }
+  .section-header { text-align: center; margin-bottom: 4rem; }
+  .section-label { display: inline-block; padding: 6px 16px; border-radius: 50px; background: rgba(26,115,232,0.1); color: var(--primary); font-size: 0.8rem; font-weight: 600; margin-bottom: 1rem; text-transform: uppercase; }
+  .section-header h2 { font-size: 2.5rem; margin-bottom: 1rem; }
 
-    /* ─── TABLE BASE ─── */
-    table { border-collapse: collapse; width: 100%; }
-    th, td {
-      border: 1px solid var(--border);
-      padding: 7px 10px;
-      font-size: 12px;
-      vertical-align: middle;
-    }
-    th {
-      background: var(--navy);
-      color: #fff;
-      font-weight: 600;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      white-space: nowrap;
-    }
+  /* ===== STATS ===== */
+  .stats-bar {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem; width: 100%; max-width: 1100px;
+  }
+  .stat { text-align: center; padding: 2.5rem; }
+  .stat h3 { font-size: 3.5rem; background: var(--gradient1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
 
-    /* ─── INPUT CELLS (green) ─── */
-    td.inp {
-      background: #E8F9F0 !important;
-      border-color: #A8DFC3 !important;
-      padding: 2px 4px;
-    }
-    input.cell-input {
-      width: 100%; border: none; background: transparent;
-      font-family: 'DM Mono', monospace;
-      font-size: 12px; font-weight: 500;
-      color: var(--green); text-align: right;
-      padding: 4px 6px; outline: none;
-      -moz-appearance: textfield;
-    }
-    input.cell-input::-webkit-outer-spin-button,
-    input.cell-input::-webkit-inner-spin-button { -webkit-appearance: none; }
-    input.cell-input::placeholder { color: #9ECFB5; font-style:italic; font-weight:400; font-size:11px; }
-    input.cell-input.center { text-align: center; }
+  /* ===== SERVICES ===== */
+  .services-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem; width: 100%; max-width: 1200px;
+  }
+  .service-card { padding: 2.5rem; }
+  .service-card:hover { transform: translateY(-10px); border-color: var(--primary); box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+  .service-icon { font-size: 3rem; margin-bottom: 1rem; display: block; }
 
-    /* ─── COMPUTED CELLS ─── */
-    td.comp {
-      font-family: 'DM Mono', monospace;
-      font-size: 12px; font-weight: 500;
-      text-align: right; padding-right: 12px;
-      background: var(--white);
-      color: var(--text);
-    }
+  /* ===== PROJECTS ===== */
+  .filter-bar { display: flex; gap: 0.5rem; justify-content: center; flex-wrap: wrap; margin-bottom: 3rem; }
+  .filter-btn {
+    padding: 8px 22px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.1);
+    background: transparent; color: var(--text-muted); cursor: pointer; transition: 0.3s;
+  }
+  .filter-btn.active, .filter-btn:hover { background: var(--primary); color: white; border-color: var(--primary); }
 
-    /* ─── ROW VARIANTS ─── */
-    tr.row-white td { background: var(--white); }
-    tr.row-blue td  { background: #EEF4FB; }
+  .projects-grid {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem; width: 100%; max-width: 1200px;
+  }
+  .project-card { overflow: hidden; cursor: pointer; }
+  .project-thumb { height: 200px; display: flex; align-items: center; justify-content: center; font-size: 4rem; position: relative; }
+  .project-tags { display: flex; gap: 0.5rem; margin-bottom: 0.75rem; }
+  .tag { font-size: 0.7rem; padding: 3px 10px; border-radius: 50px; background: rgba(26,115,232,0.2); color: var(--primary); font-weight: 600; }
+  .project-body { padding: 1.5rem; }
+  .project-actions { display: flex; gap: 0.5rem; margin-top: 0.5rem; flex-wrap: wrap; }
+  .btn-sm { padding: 8px 15px; font-size: 0.75rem; border-radius: 50px; }
+  .project-info-text { display: flex; align-items: center; gap: 5px; color: var(--text-muted); font-size: 0.8rem; margin-top: 1.2rem; font-weight: 500; }
+  .btn-accent { background: var(--accent); color: #fff; box-shadow: 0 4px 15px rgba(0, 200, 83, 0.3); }
 
-    tr.row-yellow td {
-      background: #FFFBE6 !important;
-      border-color: #E5D25A !important;
-      font-weight: 600;
-    }
-    tr.row-total td {
-      background: var(--navy) !important;
-      color: #fff !important;
-      font-weight: 700; font-size: 12px;
-    }
-    tr.row-total td.comp { background: var(--navy) !important; color: #fff !important; }
 
-    tr.s-bua td {
-      background: var(--navy) !important;
-      color: #fff !important; font-weight: 700;
-      text-align: center; font-size: 12px;
-    }
-    tr.s-orange td {
-      background: var(--orange-light) !important;
-      border-color: #F3C085 !important;
-      font-weight: 700; color: var(--orange);
-    }
-    tr.s-green-row td {
-      background: #E8F9F0 !important;
-      border-color: #A8DFC3 !important;
-      font-weight: 600;
-    }
-    tr.s-blue-ref td {
-      background: #EEF4FB !important;
-      color: var(--mid);
-    }
-    tr.s-blue-ref td.comp { color: var(--mid); background: #EEF4FB !important; }
-    tr.s-bold-green td {
-      background: #E8F9F0 !important;
-      border-color: #A8DFC3 !important;
-      font-weight: 700; color: var(--green);
-    }
+  /* ===== ABOUT SECTION ===== */
+  .about-grid {
+    display: grid; grid-template-columns: 1.2fr 1fr; gap: 4rem; width: 100%; max-width: 1200px; align-items: center;
+  }
+  .about-text p { color: var(--text-muted); line-height: 1.8; margin-bottom: 1.5rem; font-size: 1.1rem; }
+  .about-features { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+  .feature-card { padding: 2rem; text-align: center; }
+  .feature-icon { font-size: 2rem; margin-bottom: 0.5rem; display: block; }
+  .feature-card h4 { font-size: 1rem; font-weight: 600; }
 
-    td.desc-left  { text-align: left; padding-left: 14px; font-weight: 500; }
-    td.desc-i     { text-align: left; padding-left: 30px; }
-    td.desc-ii    { text-align: left; padding-left: 46px; color: var(--mid); }
-    td.sr         { text-align: center; font-weight: 600; width: 52px; background: var(--white); }
-    td.nil        { text-align: center; color: var(--muted); font-style: italic; }
-    td.lbl        { text-align: left; padding-left: 10px; min-width: 260px; }
-    td.lbl-i      { text-align: left; padding-left: 26px; }
+  /* ===== CONTACT ===== */
+  .contact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; width: 100%; max-width: 1100px; }
+  .contact-form { display: flex; flex-direction: column; gap: 1rem; padding: 2rem; }
+  .contact-form input, .contact-form textarea {
+    padding: 1rem; border-radius: 12px; border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(15, 23, 42, 0.8); color: white; font-family: inherit;
+  }
 
-    /* ─── BMC ─── */
-    tr.bmc-section td {
-      background: #FFFBE6 !important;
-      font-weight: 700; text-align: center;
-      font-size: 12px; color: #7A5C00;
-      border-color: #E5D25A !important;
-      letter-spacing: 0.4px;
-    }
-    tr.bmc-yellow td {
-      background: #FFFBE6 !important;
-      border-color: #E5D25A !important;
-      font-weight: 700;
-    }
-    .bmc-red { color: var(--red) !important; font-weight: 700; }
+  /* ===== DATA VIEW IFRAME ===== */
+  .dataview-container { width: 100%; max-width: 1200px; height: 800px; margin-top: 2rem; border-radius: 24px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); background: var(--card-bg); backdrop-filter: blur(12px); }
+  .dataview-container iframe { width: 100%; height: 100%; border: none; }
 
-    /* ─── RECOVERY ─── */
-    tr.rec-section td {
-      background: var(--navy) !important;
-      color: #fff !important; font-weight: 700;
-      text-align: center; font-size: 13px;
-    }
-    tr.rec-profit td {
-      background: #FFFBE6 !important;
-      border-color: #E5D25A !important;
-      font-weight: 700; text-align: center;
-    }
+  /* ===== BUTTONS ===== */
+  .btn { padding: 12px 30px; border-radius: 50px; font-weight: 600; text-decoration: none; transition: 0.3s; display: inline-block; cursor: pointer; border:none; }
+  .btn-primary { background: var(--gradient1); color: #fff; box-shadow: 0 4px 15px rgba(26,115,232,0.4); }
+  .btn-outline { border: 2px solid rgba(255,255,255,0.2); color: #fff; }
+  .btn:hover { transform: translateY(-3px); opacity: 0.9; }
 
-    /* ─── SUMMARY STRIP ─── */
-    .summary-strip {
-      display: flex; gap: 16px; flex-wrap: wrap;
-    }
-    .summary-kpi {
-      flex: 1; min-width: 180px;
-      background: var(--white);
-      border: 1px solid var(--border);
-      border-radius: var(--radius);
-      padding: 16px 20px;
-      box-shadow: var(--shadow);
-      position: relative; overflow: hidden;
-    }
-    .summary-kpi::before {
-      content: '';
-      position: absolute; top:0; left:0;
-      width: 4px; height: 100%;
-      border-radius: 4px 0 0 4px;
-    }
-    .kpi-blue::before  { background: var(--mid); }
-    .kpi-green::before { background: var(--green); }
-    .kpi-orange::before { background: var(--orange); }
-    .kpi-gold::before  { background: var(--gold); }
-    .kpi-navy::before  { background: var(--navy); }
-    .summary-kpi .kpi-label {
-      font-size: 10px; font-weight: 700; text-transform: uppercase;
-      letter-spacing: 0.8px; color: var(--muted); margin-bottom: 6px;
-    }
-    .summary-kpi .kpi-value {
-      font-family: 'DM Mono', monospace;
-      font-size: 18px; font-weight: 700; color: var(--navy);
-    }
-    .summary-kpi .kpi-unit {
-      font-size: 11px; color: var(--muted); font-weight: 400;
-    }
+  footer { text-align: center; padding: 4rem; color: var(--text-muted); border-top: 1px solid rgba(255,255,255,0.05); }
 
-    /* ─── AUTH MODAL ─── */
-    #auth-modal {
-      position: fixed; top:0; left:0; width:100%; height:100%;
-      background: rgba(13,27,42,0.80);
-      z-index: 9999; display: none;
-      justify-content: center; align-items: center;
-      backdrop-filter: blur(6px);
-    }
-    .auth-box {
-      background: var(--white);
-      border-radius: 16px; padding: 40px 36px;
-      width: 420px; max-width: 95vw;
-      box-shadow: var(--shadow-lg);
-      text-align: center; position: relative;
-      animation: slideIn 0.28s ease;
-    }
-    @keyframes slideIn {
-      from { transform: translateY(-24px); opacity:0; }
-      to   { transform: translateY(0); opacity:1; }
-    }
-    .auth-close { position: absolute; top:14px; right:18px; background:none; border:none; font-size:22px; cursor:pointer; color:#aaa; }
-    .auth-close:hover { color: #333; }
-    .auth-logo { font-size: 52px; display:block; margin-bottom: 10px; }
-    .auth-box h3 { font-size: 20px; font-weight:700; color: var(--navy); margin-bottom:4px; }
-    .auth-sub { font-size: 12px; color: var(--muted); margin-bottom: 22px; line-height:1.5; }
-    .auth-step { display:none; }
-    .auth-step.active { display:block; }
-    .auth-wrap { position:relative; margin-bottom:14px; }
-    .auth-icon { position:absolute; left:13px; top:50%; transform:translateY(-50%); font-size:16px; pointer-events:none; }
-    .auth-input {
-      width:100%; padding: 11px 14px 11px 40px;
-      border: 2px solid var(--border); border-radius:8px;
-      font-size:14px; outline:none; transition: border 0.2s; color: var(--text);
-      font-family: 'DM Sans', sans-serif;
-    }
-    .auth-input:focus { border-color: var(--mid); }
-    .auth-input.error { border-color: var(--red); }
-    .auth-input.success { border-color: var(--green); }
-    .otp-input {
-      width:100%; padding:12px;
-      border: 2px solid var(--border); border-radius:8px;
-      font-family: 'DM Mono', monospace;
-      font-size: 26px; text-align:center; letter-spacing:12px;
-      outline:none; transition: border 0.2s; color: var(--navy); font-weight:700;
-    }
-    .otp-input:focus { border-color: var(--mid); }
-    .otp-input.error { border-color: var(--red); }
-    .auth-btn {
-      width:100%; padding:12px;
-      background: var(--mid); color:#fff;
-      border:none; border-radius:8px;
-      font-size:14px; font-weight:700; cursor:pointer;
-      transition: background 0.2s; margin-top:4px;
-      font-family: 'DM Sans', sans-serif;
-    }
-    .auth-btn:hover { background: var(--navy); }
-    .auth-btn:disabled { background:#aaa; cursor:not-allowed; }
-    .auth-btn-sec {
-      width:100%; padding:9px;
-      background:transparent; color: var(--mid);
-      border: 2px solid var(--mid); border-radius:8px;
-      font-size:12px; font-weight:700; cursor:pointer; transition: all 0.2s; margin-top:8px;
-      font-family: 'DM Sans', sans-serif;
-    }
-    .auth-btn-sec:hover { background: var(--mid); color:#fff; }
-    .auth-msg {
-      font-size:12px; margin-top:8px; padding:8px 12px;
-      border-radius:6px; display:none;
-    }
-    .auth-msg.error { background:#fff0f0; color:#c0392b; border:1px solid #ffc9c9; display:block; }
-    .auth-msg.success { background:#f0fff6; color: var(--green); border:1px solid #b3eece; display:block; }
-    .auth-msg.info { background:#eef4ff; color: var(--mid); border:1px solid #b3c8f0; display:block; }
-    .auth-email-disp {
-      background:#eef4ff; border-radius:8px; padding:9px 12px;
-      font-size:13px; color: var(--mid); font-weight:600;
-      margin-bottom:14px; border:1px solid #b3c8f0;
-    }
-    .otp-timer { font-size:11px; color: var(--muted); margin-top:6px; }
-    .otp-timer span { color: var(--red); font-weight:700; }
-    .steps-ind { display:flex; justify-content:center; gap:8px; margin-bottom:20px; }
-    .step-dot { width:9px; height:9px; border-radius:50%; background:#ddd; transition: background 0.3s; }
-    .step-dot.active { background: var(--mid); }
-    .step-dot.done { background: var(--green); }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+  @media (max-width: 900px) { .about-grid, .contact-grid { grid-template-columns: 1fr; } .nav-links { display: none; } }
 
-    /* ─── LOCKOUT ─── */
-    #lockout-overlay {
-      display:none; position:fixed; top:0; left:0; width:100%; height:100%;
-      background: rgba(0,0,0,0.92); z-index:99999;
-      justify-content:center; align-items:center; flex-direction:column;
-      color:#fff; text-align:center;
-    }
-    #lockout-overlay h2 { font-size:26px; color: #ff4444; margin-bottom:12px; }
-    #lockout-timer { font-size:56px; font-weight:700; color: #FFD700; margin: 16px 0; font-family:'DM Mono',monospace; }
-
-    @keyframes shake {
-      0%,100%{transform:translateX(0)}
-      20%{transform:translateX(-8px)}
-      40%{transform:translateX(8px)}
-      60%{transform:translateX(-5px)}
-      80%{transform:translateX(5px)}
-    }
-    .shake { animation: shake 0.35s ease; }
-
-    /* ─── BACKEND ─── */
-    #backend-content { display:none; }
-    .backend-bar {
-      display:flex; align-items:center; justify-content:space-between;
-      background: linear-gradient(135deg, #ff4444, #c0392b);
-      color:#fff; padding:10px 20px; border-radius: var(--radius);
-      font-size:13px; font-weight:700; margin-bottom:16px;
-      box-shadow: 0 3px 12px rgba(192,57,43,0.3);
-    }
-    .user-badge {
-      background: var(--green-light);
-      border: 1px solid #A8DFC3;
-      border-radius:20px; padding:5px 14px;
-      font-size:11px; color: var(--green); font-weight:700;
-    }
-    #lock-btn {
-      background: var(--red); color:#fff; border:none;
-      border-radius:6px; padding:7px 16px;
-      font-size:12px; font-weight:700; cursor:pointer;
-    }
-    #lock-btn:hover { background:#922B21; }
-
-    /* ─── TDR TABLE ─── */
-    .tdr-yellow td { background:#FFFBE6 !important; font-weight:700; }
-
-    /* ─── AREA BREAKDOWN ─── */
-    .ab-yellow td { background:#FFFBE6 !important; font-weight:700; }
-
-    /* ─── FUNGIBLE ─── */
-    .fung-header td {
-      background: #FFFBE6 !important;
-      font-weight:700; text-align:center; font-size:13px;
-      border-color: #E5D25A !important;
-      color: #7A5C00;
-    }
-    .fung-row td { text-align:left; padding-left:12px; color: var(--mid); }
-
-    /* ─── RESPONSIVE ─── */
-    @media (max-width: 768px) {
-      .page-header { flex-direction: column; align-items: flex-start; padding: 20px; }
-      .page-body { padding: 16px; gap: 16px; }
-      .summary-strip { flex-direction: column; }
-    }
-  </style>
+  /* ===== MUSIC TOGGLE ===== */
+  .music-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  }
+  .music-toggle:hover {
+    transform: scale(1.1);
+    background: var(--primary);
+  }
+  .music-toggle.playing .play-icon { display: none; }
+  .music-toggle.paused .mute-icon { display: none; }
+</style>
 </head>
 <body>
 
-<!-- BACKEND BTN -->
-<button id="backend-access-btn" onclick="openBackendAuth()">
-  <span style="writing-mode:horizontal-tb;font-size:18px;">⚙️</span>
-  Backend
+<div id="canvas-container"></div>
+
+<audio id="bgMusic" loop autoplay>
+  <source src="https://storage.googleapis.com/producer-app-public/clips/61587533-9929-4574-8f7e-cf2da5494603.m4a" type="audio/mpeg">
+</audio>
+
+<button class="music-toggle paused" id="musicToggle" onclick="toggleMusic()">
+  <span class="play-icon">▶</span>
+  <span class="mute-icon">⏸</span>
 </button>
 
-<!-- AUTH MODAL -->
-<div id="auth-modal">
-  <div class="auth-box" id="auth-box">
-    <button class="auth-close" onclick="closeAuthModal()">✕</button>
-    <div class="steps-ind">
-      <div class="step-dot active" id="dot1"></div>
-      <div class="step-dot" id="dot2"></div>
-      <div class="step-dot" id="dot3"></div>
-    </div>
+<nav id="navbar">
+  <a class="nav-brand" href="#hero">
+    <img src="https://i.postimg.cc/dVZ3d1nB/processed-image.png" alt="Logo">
+    <span class="brand-name">Infinity Automation</span>
+  </a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#services">Services</a></li>
+    <li><a href="#projects">Projects</a></li>
+    <li><a href="#about">About</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#dataview">Data View</a></li>
+  </ul>
+  <button class="hamburger" onclick="toggleNav()">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
 
-    <div class="auth-step active" id="step1">
-      <span class="auth-logo">🔐</span>
-      <h3>Backend Access</h3>
-      <p class="auth-sub">Restricted section.<br/>Enter your authorized email to continue.</p>
-      <div class="auth-wrap">
-        <span class="auth-icon">✉️</span>
-        <input type="email" class="auth-input" id="email-input" placeholder="Enter your email address"
-               onkeydown="if(event.key==='Enter') submitEmail()"/>
-      </div>
-      <div class="auth-msg" id="email-msg"></div>
-      <button class="auth-btn" onclick="submitEmail()">Continue →</button>
-    </div>
-
-    <div class="auth-step" id="step2">
-      <span class="auth-logo">📧</span>
-      <h3>Verify OTP</h3>
-      <div class="auth-email-disp" id="otp-email-display"></div>
-      <p class="auth-sub">A 6-digit verification code has been sent.<br/>Check your email inbox.</p>
-      <input type="text" class="otp-input" id="otp-input" placeholder="000000" maxlength="6"
-             oninput="this.value=this.value.replace(/[^0-9]/g,'')"
-             onkeydown="if(event.key==='Enter') verifyOTP()"/>
-      <div class="otp-timer">Expires in: <span id="otp-countdown">05:00</span></div>
-      <div class="auth-msg" id="otp-msg"></div>
-      <button class="auth-btn" onclick="verifyOTP()" style="margin-top:12px;">✓ Verify Code</button>
-      <button class="auth-btn-sec" onclick="resendOTP()">↺ Resend Code</button>
-      <button class="auth-btn-sec" onclick="backToStep1()" style="border-color:#ccc;color:#999;">← Change Email</button>
-    </div>
-
-    <div class="auth-step" id="step3-denied">
-      <span class="auth-logo">🚫</span>
-      <h3 style="color:var(--red);">Access Denied</h3>
-      <p class="auth-sub" style="color:var(--red);">
-        <strong id="denied-email-show"></strong><br/><br/>
-        This email is not authorized to access backend data.
-      </p>
-      <button class="auth-btn" style="background:#888;" onclick="backToStep1()">← Try Different Email</button>
+<section class="hero" id="hero">
+  <div class="hero-content">
+    <h1>Infinity <span class="highlight">Automation</span> Systems</h1>
+    <p>We transform raw data into powerful insights. Expert solutions in spreadsheets, dashboards, and business intelligence tools.</p>
+    <div class="hero-btns">
+      <a href="#projects" class="btn btn-primary">View Projects</a>
+      <a href="#contact" class="btn btn-outline">Get In Touch</a>
     </div>
   </div>
-</div>
+</section>
 
-<!-- LOCKOUT -->
-<div id="lockout-overlay">
-  <h2>🚫 Too Many Attempts</h2>
-  <p>Access temporarily blocked. Please wait.</p>
-  <div id="lockout-timer">60</div>
-  <p style="font-size:12px;color:#aaa;">seconds remaining</p>
-</div>
-
-<!-- ══ PAGE HEADER ══ -->
-<div class="page-header">
-  <div class="header-left">
-    <h1>Feasibility Report — Scheme 33(7)B</h1>
-    <div class="subtitle">Area Statement · BMC Expenditure · Recovery Analysis · Redevelopment Calculator</div>
+<section>
+  <div class="stats-bar">
+    <div class="stat glass-card"><h3 class="counter" data-target="15">0</h3><p>Projects Delivered</p></div>
+    <div class="stat glass-card"><h3 class="counter" data-target="50">0</h3><p>Automations Built</p></div>
+    <div class="stat glass-card"><h3 class="counter" data-target="70">0</h3><p>Dashboards Created</p></div>
+    <div class="stat glass-card"><h3 class="counter" data-target="100">0</h3><p>Client Satisfaction %</p></div>
   </div>
-  <div class="header-right">
-    <div class="rr-block">
-      <label>R.R. Rate</label>
-      <input type="number" id="rr_value" placeholder="e.g. 72830" min="0" step="any"/>
-    </div>
+</section>
+
+<section id="services">
+  <div class="section-header">
+    <span class="section-label">What We Do</span>
+    <h2>Our Core Services</h2>
+    <p style="color:var(--text-muted)">End-to-end data solutions from automation to visualization</p>
   </div>
-</div>
-
-<div class="page-body">
-
-  <!-- ══ SUMMARY KPIs ══ -->
-  <div class="summary-strip">
-    <div class="summary-kpi kpi-blue">
-      <div class="kpi-label">Total Proposed Area</div>
-      <div class="kpi-value"><span id="kpi_e9">0.00</span> <span class="kpi-unit">sq.ft</span></div>
+  <div class="services-grid">
+    <div class="service-card glass-card">
+      <span class="service-icon">📊</span>
+      <h3>Google Sheets & Apps Script</h3>
+      <p>I build a centralized Google Sheets system that automatically updates, organizes, and tracks your data in real time. It reduces manual work and gives you instant visibility.</p>
     </div>
-    <div class="summary-kpi kpi-green">
-      <div class="kpi-label">Total Permissible BUA</div>
-      <div class="kpi-value"><span id="kpi_m31">0.00</span> <span class="kpi-unit">sq.ft</span></div>
+    <div class="service-card glass-card">
+      <span class="service-icon">📝</span>
+      <h3>Google Docs Automation</h3>
+      <p>Automated document generation, mail merge, template systems, and document workflow solutions.</p>
     </div>
-    <div class="summary-kpi kpi-orange">
-      <div class="kpi-label">Balance Carpet for Sale</div>
-      <div class="kpi-value"><span id="kpi_m40">0.00</span> <span class="kpi-unit">sq.ft</span></div>
+    <div class="service-card glass-card">
+      <span class="service-icon">📗</span>
+      <h3>Excel & VBA Solutions</h3>
+      <p>Advanced Excel dashboards, macros, VBA automation, and complex formula-driven reporting systems.</p>
     </div>
-    <div class="summary-kpi kpi-gold">
-      <div class="kpi-label">Total Project Cost</div>
-      <div class="kpi-value"><span id="kpi_u48">0.00</span></div>
+    <div class="service-card glass-card">
+      <span class="service-icon">📈</span>
+      <h3>Power BI Dashboards</h3>
+      <p>Interactive business intelligence dashboards with DAX measures and real-time data connectivity.</p>
     </div>
-    <div class="summary-kpi kpi-navy">
-      <div class="kpi-label">Gross Profit %</div>
-      <div class="kpi-value"><span id="kpi_pct">0.00</span><span class="kpi-unit"> %</span></div>
+    <div class="service-card glass-card">
+      <span class="service-icon">🔄</span>
+      <h3>Power Query & ETL</h3>
+      <p>Data transformation pipelines, cleaning workflows, and ETL processes using Power Query M language.</p>
     </div>
-  </div>
-
-  <!-- ══ AREA STATEMENT ══ -->
-  <div class="card">
-    <div class="card-header">
-      <div class="dot"></div>
-      <h3>Area Statement</h3>
+    <div class="service-card glass-card">
+      <span class="service-icon">📉</span>
+      <h3>Tableau Visualizations</h3>
+      <p>Stunning interactive visualizations and analytical dashboards built with Tableau Desktop & Server.</p>
     </div>
-    <div class="card-body">
-      <table id="areaTable">
-        <tr>
-          <th colspan="2">Description</th>
-          <th style="width:130px;">Area (sq.mt)</th>
-          <th style="width:150px;">Area (sq.ft)</th>
-        </tr>
-        <tr class="row-white">
-          <td class="desc-left" colspan="2">Existing Residential Area</td>
-          <td class="comp" id="d3">0.00</td>
-          <td class="inp"><input type="number" class="cell-input" id="e3" placeholder="Enter sq.ft"/></td>
-        </tr>
-        <tr class="row-white">
-          <td class="desc-i" colspan="2">Additional Area (%)</td>
-          <td class="inp"><input type="number" class="cell-input center" id="c4" placeholder="%"/></td>
-          <td class="comp" id="e4">0.00</td>
-        </tr>
-        <tr class="row-yellow">
-          <td class="desc-i" colspan="2">Total Existing Resi. Area</td>
-          <td class="comp" id="d5">0.00</td>
-          <td class="comp" id="e5">0.00</td>
-        </tr>
-        <tr class="row-blue">
-          <td class="desc-left" colspan="2">Existing Commercial Area</td>
-          <td class="comp" id="d6">0.00</td>
-          <td class="inp"><input type="number" class="cell-input" id="e6" placeholder="Enter sq.ft"/></td>
-        </tr>
-        <tr class="row-blue">
-          <td class="desc-i" colspan="2">Additional Area (%)</td>
-          <td class="inp"><input type="number" class="cell-input center" id="c7" placeholder="%"/></td>
-          <td class="comp" id="e7">0.00</td>
-        </tr>
-        <tr class="row-yellow">
-          <td class="desc-i" colspan="2">Total Existing Comm. Area</td>
-          <td class="comp" id="d8">0.00</td>
-          <td class="comp" id="e8">0.00</td>
-        </tr>
-        <tr class="row-total">
-          <td colspan="2" style="text-align:center;">Total Proposed</td>
-          <td class="comp" id="d9">0.00</td>
-          <td class="comp" id="e9">0.00</td>
-        </tr>
-      </table>
+    <div class="service-card glass-card">
+      <span class="service-icon">🔍</span>
+      <h3>Looker Studio Reports</h3>
+      <p>Connected dashboards pulling from multiple data sources with dynamic filtering and sharing capabilities.</p>
+    </div>
+    <div class="service-card glass-card">
+      <span class="service-icon">⚙️</span>
+      <h3>Custom Data Automation</h3>
+      <p>End-to-end automation of data collection, processing, analysis, and reporting tailored to your needs.</p>
     </div>
   </div>
+</section>
 
-  <!-- ══ SCHEME 33(7)B ══ -->
-  <div class="card">
-    <div class="card-header">
-      <div class="dot" style="background:var(--orange);"></div>
-      <h3>Scheme 33(7)B — BUA Construction</h3>
-    </div>
-    <div class="card-body">
-      <table id="schemeTable">
-        <tr>
-          <th style="width:55px;">Sr.No.</th>
-          <th colspan="2">Description</th>
-          <th style="width:120px;">SQ.MT.</th>
-          <th style="width:120px;">SQ.FT.</th>
-        </tr>
-        <tr class="s-bua"><td colspan="5">B.U.A AREA CONSTRUCTION</td></tr>
-
-        <tr>
-          <td class="sr">1</td>
-          <td class="lbl" colspan="2">Area Of The Plot (As per P.R Card)</td>
-          <td class="inp"><input type="number" class="cell-input" id="l6" placeholder="sq.mt"/></td>
-          <td class="comp" id="m6">0.00</td>
-        </tr>
-        <tr>
-          <td class="sr"></td>
-          <td class="lbl" colspan="2">Area Of The Plot (As per Demarcation)</td>
-          <td class="inp"><input type="number" class="cell-input" id="l7" placeholder="sq.mt"/></td>
-          <td class="comp" id="m7">0.00</td>
-        </tr>
-        <tr>
-          <td class="sr"></td><td class="lbl" colspan="2">Deduction For</td><td></td><td></td>
-        </tr>
-        <tr>
-          <td class="sr"></td>
-          <td class="lbl-i" colspan="2">(a) Road Set Back Area (approx.)</td>
-          <td class="inp"><input type="number" class="cell-input" id="l9a" placeholder="0.00"/></td>
-          <td class="comp" id="m9a">0.00</td>
-        </tr>
-        <tr><td class="sr">2</td><td class="lbl-i" colspan="2">(b) Proposed Road</td><td class="nil">NIL</td><td class="nil">NIL</td></tr>
-        <tr><td class="sr"></td><td class="lbl-i" colspan="2">(c) Any Reservation (Sub Plot)</td><td class="nil">NIL</td><td class="nil">NIL</td></tr>
-        <tr><td class="sr"></td><td class="lbl-i" colspan="2">(d) % Amenity Space As Per DCR 56/57</td><td class="nil">NIL</td><td class="nil">NIL</td></tr>
-        <tr><td class="sr"></td><td class="lbl-i" colspan="2">(e) Encroachment Area</td><td></td><td></td></tr>
-        <tr>
-          <td class="sr"></td><td class="lbl-i" colspan="2">Total (a+b+c+d)</td>
-          <td class="comp" id="l9_total">0.00</td>
-          <td class="comp" id="m9_total">0.00</td>
-        </tr>
-        <tr><td class="sr">3</td><td class="lbl" colspan="2">Balance Area Of Plot (1–2)</td><td class="comp" id="l10">0.00</td><td class="comp" id="m10">0.00</td></tr>
-        <tr><td class="sr">4</td><td class="lbl" colspan="2">Deduction For 15% Recreational Ground</td><td class="nil">NIL</td><td class="nil">NIL</td></tr>
-        <tr><td class="sr"></td><td class="lbl-i" colspan="2">5% Amenity Space (If Deductable For Ind)</td><td class="nil">NIL</td><td class="nil">NIL</td></tr>
-        <tr><td class="sr">5</td><td class="lbl" colspan="2">Net Area Of Plot (3 – 4)</td><td class="comp" id="l15">0.00</td><td class="comp" id="m15">0.00</td></tr>
-        <tr><td class="sr"></td><td class="lbl" colspan="2">Additions For Floor Space Index</td><td></td><td></td></tr>
-        <tr><td class="sr">6</td><td class="lbl-i" colspan="2">2(a) 100% For D.P. Road (restricted to 40% or 80% Of "3")</td><td class="nil">NIL</td><td class="nil">NIL</td></tr>
-        <tr><td class="sr"></td><td class="lbl-i" colspan="2">2(a) 100% For Set Back (restricted to 40% or 80% Of "3")</td><td class="comp">0</td><td class="nil">NIL</td></tr>
-
-        <tr class="s-orange">
-          <td class="sr">7</td><td class="lbl" colspan="2">Total Areas (5 + 6)</td>
-          <td class="comp" id="l18">0.00</td><td class="comp" id="m22">0.00</td>
-        </tr>
-
-        <tr>
-          <td class="sr">8</td>
-          <td class="lbl">Basic FSI</td>
-          <td class="inp"><input type="number" class="cell-input center" id="j23" placeholder="e.g. 1.0"/></td>
-          <td class="comp" id="l23">0.00</td><td class="comp" id="m23">0.00</td>
-        </tr>
-
-        <tr class="s-green-row">
-          <td class="sr"></td>
-          <td class="lbl">Road Width (mt)</td>
-          <td class="inp" style="background:#E8F9F0!important;border-color:#A8DFC3!important;">
-            <input type="number" class="cell-input center" id="roadWidth" placeholder="e.g. 9.15"/>
-          </td>
-          <td></td><td></td>
-        </tr>
-
-        <tr>
-          <td class="sr" rowspan="4">9</td>
-          <td class="lbl-i">9a) Add. F.S.I</td>
-          <td class="inp"><input type="number" class="cell-input center" id="j25" placeholder="e.g. 0.5"/></td>
-          <td class="comp" id="l25">0.00</td><td class="comp" id="m25">0.00</td>
-        </tr>
-        <tr>
-          <td class="lbl-i">9b) T.D.R</td>
-          <td class="inp"><input type="number" class="cell-input center" id="j26" placeholder="e.g. 0.5"/></td>
-          <td class="comp" id="l26">0.00</td><td class="comp" id="m26">0.00</td>
-        </tr>
-        <tr><td class="lbl-i">9c) % As Per DCR 33</td><td></td><td class="nil">NIL</td><td class="nil">NIL</td></tr>
-        <tr><td class="lbl-i">9d) Road Set Back Benefit 2 Times</td><td></td><td class="comp" id="l9d">0.00</td><td class="nil">NIL</td></tr>
-
-        <tr class="s-orange">
-          <td class="sr">10</td><td class="lbl" colspan="2">Permissible Floor Area (7×8) Plus 9</td>
-          <td class="comp" id="l29">0.00</td><td class="comp" id="m29">0.00</td>
-        </tr>
-        <tr><td class="sr">11</td><td class="lbl" colspan="2">Permissible 35% Fungible B.U.A</td><td class="comp" id="l30">0.00</td><td class="comp" id="m30">0.00</td></tr>
-        <tr class="s-orange">
-          <td class="sr">12</td><td class="lbl" colspan="2">Total Permissible B.U.A including Fungible</td>
-          <td class="comp" id="l31">0.00</td><td class="comp" id="m31">0.00</td>
-        </tr>
-        <tr><td class="sr">13</td><td class="lbl" colspan="2">Total Carpet Area Available (MOFA)</td><td class="comp" id="l32">0.00</td><td class="comp" id="m32">0.00</td></tr>
-
-        <tr class="s-blue-ref"><td class="sr">14</td><td class="lbl" colspan="2">Existing Members Carpet Area — Resi.</td><td class="comp" id="s_d3">0.00</td><td class="comp" id="s_e3">0.00</td></tr>
-        <tr class="s-blue-ref"><td class="sr">a</td><td class="lbl-i" colspan="2">Additional Carpet Area to Existing Members</td><td class="comp" id="s_d4">0.00</td><td class="comp" id="s_e4">0.00</td></tr>
-        <tr class="s-blue-ref"><td class="sr">b</td><td class="lbl-i" colspan="2">Total Resi. Area</td><td class="comp" id="s_d5">0.00</td><td class="comp" id="s_e5">0.00</td></tr>
-        <tr class="s-blue-ref"><td class="sr">15</td><td class="lbl" colspan="2">Existing Members Carpet Area — Comm.</td><td class="comp" id="s_d6">0.00</td><td class="comp" id="s_e6">0.00</td></tr>
-        <tr class="s-blue-ref"><td class="sr">a</td><td class="lbl-i" colspan="2">Additional Carpet Area to Existing Members</td><td class="comp" id="s_d7">0.00</td><td class="comp" id="s_e7">0.00</td></tr>
-        <tr class="s-blue-ref"><td class="sr">b</td><td class="lbl-i" colspan="2">Total Comm. Area</td><td class="comp" id="s_d8">0.00</td><td class="comp" id="s_e8">0.00</td></tr>
-        <tr class="s-blue-ref"><td class="sr">16</td><td class="lbl" colspan="2">Total Carpet Area Proposed to Existing Members</td><td class="comp" id="l_d9">0.00</td><td class="comp" id="m_e9">0.00</td></tr>
-
-        <tr class="s-orange">
-          <td class="sr">17</td><td class="lbl" colspan="2">Balance Carpet for Sale (MOFA)</td>
-          <td class="comp" id="l40">0.00</td><td class="comp" id="m40">0.00</td>
-        </tr>
-        <tr><td class="sr"></td><td class="lbl" colspan="2">Balance Carpet for Sale (RERA)</td><td class="comp" id="l40r">0.00</td><td class="comp" id="m40r">0.00</td></tr>
-        <tr><td class="sr">a</td><td class="lbl" colspan="2">Proposed Residential Sale</td><td class="comp" id="l41">0.00</td><td class="comp" id="m42">0.00</td></tr>
-        <tr class="s-bold-green">
-          <td class="sr">b</td><td class="lbl" colspan="2">Proposed Commercial Sale</td>
-          <td class="inp" style="background:#E8F9F0!important;border-color:#A8DFC3!important;">
-            <input type="number" class="cell-input" id="l43_in" placeholder="sq.mt"/>
-          </td>
-          <td class="comp" id="m43">0.00</td>
-        </tr>
-      </table>
-    </div>
+<section class="projects-section" id="projects">
+  <div class="section-header">
+    <span class="section-label">Portfolio</span>
+    <h2>Featured Projects</h2>
+    <p style="color:var(--text-muted)">Click any project to watch the demo video</p>
   </div>
-
-  <!-- ══ BMC EXPENDITURE ══ -->
-  <div class="card">
-    <div class="card-header">
-      <div class="dot" style="background:var(--gold);"></div>
-      <h3>B.M.C Expenditure</h3>
-    </div>
-    <div class="card-body">
-      <table id="bmcTable">
-        <colgroup>
-          <col style="width:55px;"><col><col style="width:120px;"><col style="width:120px;"><col style="width:75px;"><col style="width:150px;">
-        </colgroup>
-        <tr>
-          <th>Sr.</th><th style="text-align:left;padding-left:10px;">Description</th>
-          <th>Area</th><th>Rate</th><th>%</th><th>Amount</th>
-        </tr>
-        <tr class="bmc-section"><td colspan="6">Statutory Levies & Charges</td></tr>
-        <tr><td class="sr">1</td><td class="desc-left">T.D.R</td><td class="comp" id="bmc_i57_area">0.00</td><td></td><td></td><td class="comp" id="u4">0.00</td></tr>
-        <tr><td class="sr">2</td><td class="desc-left">0.50 FSI @ 50% of RR</td><td class="comp" id="bmc_l26">0.00</td><td></td><td></td><td class="comp" id="u5">0.00</td></tr>
-        <tr><td class="sr">3a</td><td class="desc-left">Fungible FSI Payment @ 50% of RR (Residential)</td><td class="comp" id="bmc_f62">0.00</td><td></td><td></td><td class="comp" id="u6">0.00</td></tr>
-        <tr><td class="sr">3b</td><td class="desc-left">Fungible FSI Payment @ 60% of RR (Commercial)</td><td class="comp" id="bmc_f66">0.00</td><td></td><td></td><td class="comp" id="u7">0.00</td></tr>
-        <tr><td class="sr">4</td><td class="desc-left">Layout Scrutiny Fees</td><td class="comp" id="bmc_l15_ls">0.00</td><td class="comp">18</td><td></td><td class="comp" id="u8">0.00</td></tr>
-        <tr><td class="sr">5</td><td class="desc-left">Layout Deposit</td><td class="comp" id="bmc_l15_ld">0.00</td><td class="comp">50</td><td></td><td class="comp" id="u9">0.00</td></tr>
-        <tr><td class="sr">6</td><td class="desc-left">IOD Deposit</td><td class="comp" id="bmc_l31_iod">0.00</td><td class="comp">10.764</td><td class="comp">1</td><td class="comp" id="u10">0.00</td></tr>
-        <tr><td class="sr">7</td><td class="desc-left">Debris Removal Deposit</td><td class="comp" id="bmc_m31_drd">0.00</td><td></td><td></td><td class="comp" id="u11">0.00</td></tr>
-        <tr><td class="sr">8</td><td class="desc-left">Labour Welfare</td><td class="comp" id="bmc_l29l30">0.00</td><td class="comp bmc-red">31763</td><td class="comp">1%</td><td class="comp" id="u12">0.00</td></tr>
-        <tr><td class="sr">9</td><td class="desc-left">Deficiency in Open Space (Approx)</td><td></td><td></td><td></td><td class="comp" id="u13">0.00</td></tr>
-        <tr><td class="sr">10</td><td class="desc-left">Staircase Premium (Approx)</td><td></td><td></td><td></td><td class="comp" id="u14">0.00</td></tr>
-        <tr><td class="sr">11</td><td class="desc-left">LUC @ 2.37% for 2 years</td><td></td><td></td><td></td><td class="comp" id="u15">0.00</td></tr>
-        <tr><td class="sr">12</td><td class="desc-left">Free Hold Land Conversion</td><td class="comp" id="bmc_l15_fh">0.00</td><td class="comp" id="bmc_l1_fh">0.00</td><td class="comp">10%</td><td class="comp" id="u16">0.00</td></tr>
-        <tr><td class="sr">13</td><td class="desc-left">Consultants & Marketing Fees @ 4% of Construction Cost</td><td></td><td></td><td></td><td class="comp" id="u17">0.00</td></tr>
-        <tr><td class="sr">14</td><td class="desc-left">Registration, Stamp Duty, Members GST etc. (Approx)</td><td></td><td></td><td></td><td class="comp">12,500,000</td></tr>
-        <tr><td class="sr">15</td><td class="desc-left">Misc. Expenses Approx. @ ₹400/Sq.Ft. (Approvals)</td><td class="comp" id="bmc_m31_misc">0.00</td><td class="comp">400</td><td></td><td class="comp" id="u19">0.00</td></tr>
-        <tr><td class="sr">16</td><td class="desc-left">Development Cess</td><td class="comp" id="bmc_f64l1_area">0.00</td><td></td><td class="comp">5%</td><td class="comp" id="u20">0.00</td></tr>
-
-        <tr class="bmc-section"><td colspan="6">Development Charges</td></tr>
-        <tr>
-          <td class="sr" rowspan="4">17</td>
-          <td class="desc-left">Land Component (Residential) @ 1%</td><td class="comp" id="bmc_l18_dc">0.00</td><td class="comp" id="bmc_l1_dc1">0.00</td><td class="comp">1%</td><td class="comp" id="u22">0.00</td>
-        </tr>
-        <tr><td class="desc-left">Building Component (Residential) @ 4%</td><td class="comp" id="bmc_l31_dc">0.00</td><td class="comp" id="bmc_l1_dc2">0.00</td><td class="comp">4%</td><td class="comp" id="u23">0.00</td></tr>
-        <tr><td class="desc-left">Land Component (Commercial) @ 2%</td><td class="comp" id="bmc_l22_dc">0.00</td><td class="comp" id="bmc_l1_dc3">0.00</td><td class="comp">2%</td><td class="comp" id="u24">0.00</td></tr>
-        <tr><td class="desc-left">Building Component (Commercial) 8%</td><td class="comp" id="bmc_l43_dc">0.00</td><td class="comp" id="bmc_l1_dc4">0.00</td><td class="comp">8%</td><td class="comp" id="u25">0.00</td></tr>
-
-        <tr class="bmc-section"><td colspan="6">CFO Charges</td></tr>
-        <tr><td class="sr">18</td><td class="desc-left">CFO Fire Service Fees — Residential</td><td class="comp" id="bmc_l31_cfo1">0.00</td><td class="comp">159</td><td></td><td class="comp" id="u27">0.00</td></tr>
-        <tr><td class="sr"></td><td class="desc-left">CFO Fire Service Fees — Commercial</td><td class="comp" id="bmc_l31_cfo2">0.00</td><td class="comp">239</td><td></td><td class="comp" id="u28">0.00</td></tr>
-
-        <tr class="bmc-section"><td colspan="6">Member Expenses</td></tr>
-        <tr>
-          <td class="sr" rowspan="3">19a</td>
-          <td class="desc-left">Rent Residential (___ % increment / year)</td>
-          <td class="comp" id="bmc_e3_r1">0.00</td>
-          <td class="inp"><input type="number" class="cell-input" id="rent_r1" placeholder="75"/></td>
-          <td class="comp">12</td><td class="comp" id="u30">0.00</td>
-        </tr>
-        <tr><td class="desc-left"></td><td class="comp" id="bmc_e3_r2">0.00</td><td class="comp bmc-red" id="bmc_r2_rate">82.50</td><td class="comp">12</td><td class="comp" id="u31">0.00</td></tr>
-        <tr><td class="desc-left"></td><td class="comp" id="bmc_e3_r3">0.00</td><td class="comp bmc-red" id="bmc_r3_rate">90.75</td><td class="comp">12</td><td class="comp" id="u32">0.00</td></tr>
-        <tr>
-          <td class="sr" rowspan="3">19b</td>
-          <td class="desc-left">Rent Commercial (___ % increment / year)</td>
-          <td class="comp" id="bmc_e6_r1">0.00</td>
-          <td class="inp"><input type="number" class="cell-input" id="rent_c1" placeholder="100"/></td>
-          <td class="comp">12</td><td class="comp" id="u33">0.00</td>
-        </tr>
-        <tr><td class="desc-left"></td><td class="comp" id="bmc_e6_r2">0.00</td><td class="comp bmc-red" id="bmc_cr2_rate">110.00</td><td class="comp">12</td><td class="comp" id="u34">0.00</td></tr>
-        <tr><td class="desc-left"></td><td class="comp" id="bmc_e6_r3">0.00</td><td class="comp bmc-red" id="bmc_cr3_rate">121.00</td><td class="comp">12</td><td class="comp" id="u35">0.00</td></tr>
-        <tr><td class="sr">20a</td><td class="desc-i" style="color:var(--mid);">Residential Corpus</td><td class="comp" id="bmc_e3_corp">0.00</td><td class="comp">1000</td><td class="comp">1</td><td class="comp" id="u36">0.00</td></tr>
-        <tr><td class="sr">20b</td><td class="desc-i" style="color:var(--mid);">Commercial Corpus</td><td class="comp" id="bmc_e6_corp">0.00</td><td class="comp">0</td><td class="comp">1</td><td class="comp" id="u37">0.00</td></tr>
-        <tr><td class="sr">21a</td><td class="desc-i" style="color:var(--mid);">Residential Brokerage (one month rent)</td><td></td><td class="comp">25000</td><td class="comp bmc-red">16</td><td class="comp" id="u38">400,000</td></tr>
-        <tr><td class="sr">22b</td><td class="desc-i" style="color:var(--mid);">Commercial Brokerage (one month rent)</td><td class="comp" id="bmc_e6_brok">0.00</td><td class="comp">0</td><td></td><td class="comp" id="u39">0.00</td></tr>
-        <tr><td class="sr">23a</td><td class="desc-i" style="color:var(--mid);">Residential Shifting Charges</td><td></td><td class="comp">15000</td><td class="comp bmc-red">16</td><td class="comp" id="u40">240,000</td></tr>
-        <tr><td class="sr">23b</td><td class="desc-i" style="color:var(--mid);">Commercial Shifting Charges</td><td class="comp" id="bmc_e6_shift">0.00</td><td class="comp">0</td><td></td><td class="comp" id="u41">0.00</td></tr>
-
-        <tr class="bmc-section"><td colspan="6">Construction Cost</td></tr>
-        <tr>
-          <td class="sr">24a</td><td class="desc-i" style="color:var(--mid);">Construction Cost (F.S.I) Incl. GST</td>
-          <td class="comp" id="bmc_m31_cc">0.00</td>
-          <td class="inp"><input type="number" class="cell-input" id="cc_rate" placeholder="3304"/></td>
-          <td></td><td class="comp" id="u43">0.00</td>
-        </tr>
-        <tr>
-          <td class="sr">24b</td><td class="desc-i" style="color:var(--mid);">Construction Cost (Non-F.S.I) Incl. GST</td>
-          <td class="comp" id="bmc_m31_40">0.00</td>
-          <td class="inp"><input type="number" class="cell-input" id="cc_rate2" placeholder="3304"/></td>
-          <td></td><td class="comp" id="u44">0.00</td>
-        </tr>
-        <tr><td class="sr">25</td><td class="desc-left" colspan="4">Total Construction Cost</td><td class="comp" id="u45">0.00</td></tr>
-        <tr class="bmc-yellow">
-          <td class="sr">27</td><td class="desc-left" style="font-weight:700;">Interest Cost 15% for 1 Year</td>
-          <td class="inp" style="background:#FFFBE6!important;border-color:#E5D25A!important;">
-            <input type="number" class="cell-input" id="interest_base" placeholder="40000000" style="color:var(--gold);"/>
-          </td>
-          <td class="comp bmc-red">15%</td><td class="comp">2</td><td class="comp" id="u47">0.00</td>
-        </tr>
-        <tr class="bmc-yellow">
-          <td class="sr">28</td><td class="desc-left" colspan="4" style="font-weight:700;">Total Project Cost Including Interest</td>
-          <td class="comp" id="u48">0.00</td>
-        </tr>
-      </table>
-    </div>
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filterProjects('all', this)">All</button>
+    <button class="filter-btn" onclick="filterProjects('sheets', this)">Google Sheets</button>
+    <button class="filter-btn" onclick="filterProjects('docs', this)">Google Docs</button>
+    <button class="filter-btn" onclick="filterProjects('excel', this)">Excel</button>
+    <button class="filter-btn" onclick="filterProjects('powerbi', this)">Power BI</button>
+    <button class="filter-btn" onclick="filterProjects('tableau', this)">Tableau</button>
+    <button class="filter-btn" onclick="filterProjects('looker', this)">Looker Studio</button>
   </div>
-
-  <!-- ══ RECOVERY ══ -->
-  <div class="card">
-    <div class="card-header">
-      <div class="dot" style="background:var(--green);"></div>
-      <h3>Recovery Statement</h3>
-    </div>
-    <div class="card-body">
-      <table id="recoveryTable">
-        <tr>
-          <th style="width:52px;">Sr.</th>
-          <th style="text-align:left;padding-left:10px;">Description</th>
-          <th style="width:130px;">Area</th>
-          <th style="width:130px;">Rate</th>
-          <th style="width:150px;">Amount</th>
-        </tr>
-        <tr>
-          <td class="sr">1</td>
-          <td class="desc-left">Sale — Available Carpet for Residential</td>
-          <td class="comp" id="rec_m42">0.00</td>
-          <td class="inp"><input type="number" class="cell-input" id="sale_resi_rate" placeholder="27000"/></td>
-          <td class="comp" id="u50">0.00</td>
-        </tr>
-        <tr>
-          <td class="sr">2</td>
-          <td class="desc-left">Sale — Available Carpet for Commercial</td>
-          <td class="comp" id="rec_m43">0.00</td>
-          <td class="inp"><input type="number" class="cell-input" id="sale_comm_rate" placeholder="52000"/></td>
-          <td class="comp" id="u51">0.00</td>
-        </tr>
-        <tr>
-          <td class="sr">3</td>
-          <td class="desc-left">Parking Sale (Approx)</td>
-          <td class="inp"><input type="number" class="cell-input" id="parking_count" placeholder="25"/></td>
-          <td class="inp"><input type="number" class="cell-input" id="parking_rate" placeholder="1000000"/></td>
-          <td class="comp" id="u52">0.00</td>
-        </tr>
-        <tr>
-          <td class="sr">4</td><td class="desc-left" colspan="3" style="font-weight:700;">Total Recovery</td>
-          <td class="comp" id="u53">0.00</td>
-        </tr>
-        <tr class="rec-profit">
-          <td colspan="4" style="font-weight:700;padding:10px;">GROSS PROFIT</td>
-          <td class="comp" id="u54">0.00</td>
-        </tr>
-        <tr class="rec-profit">
-          <td colspan="4" style="font-weight:700;padding:10px;">GROSS PROFIT %</td>
-          <td class="comp" id="u54_pct">0.00 %</td>
-        </tr>
-      </table>
-    </div>
-  </div>
-
-  <!-- ══ BACKEND SECTION ══ -->
-  <div id="backend-section">
-    <div id="backend-content">
-      <div class="backend-bar">
-        <span>⚙️ BACKEND DATA — Not for Client View</span>
-        <div style="display:flex;align-items:center;gap:12px;">
-          <div class="user-badge">✅ <span id="logged-email"></span></div>
-          <button id="lock-btn" onclick="lockBackend()">🔒 Logout</button>
+  <div class="projects-grid" id="projectsGrid">
+    <!-- Project 1 -->
+    <div class="project-card glass-card" data-cat="sheets">
+      <div class="project-thumb" style="background:linear-gradient(135deg,#0f9d58,#34a853);">📊</div>
+      <div class="project-body">
+        <div class="project-tags"><span class="tag">Google Sheets</span><span class="tag">Apps Script</span></div>
+        <h3>Google Calendar Event Creation</h3>
+        <p>Automatic scheduling of events in Google Calendar along with sending emails like invites and reminders.</p>
+        <div class="project-info-text">⬇ Fill Out the Project Demo and Check</div>
+        <div class="project-actions">
+          <button class="btn btn-primary btn-sm" onclick="openProjectForm(event, 'https://script.google.com/macros/s/AKfycbzBHP5S83Q_AKR_iVB4_ipmWjnQNDeVScxhVURjmknILvjcSvgttAW-ygEnhGPUps9P_w/exec')">Form Link</button>
+          <button class="btn btn-accent btn-sm" onclick="scrollToDataView()">Form Data View</button>
         </div>
       </div>
-
-      <!-- TDR Calculations -->
-      <div class="card" style="margin-bottom:20px;">
-        <div class="card-header">
-          <div class="dot" style="background:var(--red);"></div>
-          <h3>TDR & Fungible Calculations</h3>
+    </div>
+    <!-- Project 2 -->
+    <div class="project-card glass-card" data-cat="sheets">
+      <div class="project-thumb" style="background:linear-gradient(135deg,#0f9d58,#1a73e8);">📋</div>
+      <div class="project-body">
+        <div class="project-tags"><span class="tag">Google Sheets</span><span class="tag">Automation</span></div>
+        <h3>Cashflow Management System</h3>
+        <p>Complete Cashflow database tracking income and expenses with automated real-time balancing.</p>
+        <div class="project-info-text">⬇ Fill Out the Project Demo and Check</div>
+        <div class="project-actions">
+          <button class="btn btn-primary btn-sm" onclick="openProjectForm(event, 'Cashflow Management System')">Form Link</button>
+          <button class="btn btn-accent btn-sm" onclick="scrollToDataView()">Form Data View</button>
         </div>
-        <div class="card-body">
-          <table id="tdrTable" style="margin-bottom:20px;">
-            <tr>
-              <th>Plot Area</th><th>50% TDR</th>
-              <th>General TDR 20% (sq.mt)</th><th>(sq.ft)</th>
-              <th>RR%</th><th>RR Rate</th>
-              <th>RR in sq.ft</th><th>%</th><th>Total</th>
-            </tr>
-            <tr>
-              <td>L15=<span id="tdr_l15">0.00</span></td>
-              <td>L25=<span id="tdr_l25">0.00</span></td>
-              <td class="comp" id="tdr_b49">0.00</td>
-              <td class="comp" id="tdr_c49">0.00</td>
-              <td>65</td>
-              <td class="comp" id="tdr_l1">0.00</td>
-              <td class="comp" id="tdr_f49">0.00</td>
-              <td class="comp" id="tdr_g49">0.00</td>
-              <td class="comp" id="tdr_h49">0.00</td>
-            </tr>
-            <tr>
-              <td></td><td></td>
-              <td style="text-align:left;padding-left:8px;">General TDR 20% (sq.mt)</td>
-              <td></td><td></td><td></td><td></td><td>95%</td><td></td>
-            </tr>
-            <tr>
-              <td>L15=<span id="tdr_l15b">0.00</span></td>
-              <td>L25=<span id="tdr_l25b">0.00</span></td>
-              <td class="comp" id="tdr_b52">0.00</td>
-              <td class="comp" id="tdr_c52">0.00</td>
-              <td>95</td>
-              <td class="comp" id="tdr_l1b">0.00</td>
-              <td class="comp" id="tdr_f52">0.00</td>
-              <td class="comp" id="tdr_g52">0.00</td>
-              <td class="comp" id="tdr_h52">0.00</td>
-            </tr>
-            <tr class="tdr-yellow"><td colspan="8" style="text-align:center;font-weight:700;">Total Agreement Value</td><td class="comp" id="tdr_i54">0.00</td></tr>
-            <tr><td colspan="8" style="text-align:center;">3% Stamp Duty</td><td class="comp" id="tdr_i55">0.00</td></tr>
-            <tr><td colspan="8" style="text-align:center;">1% Stamp Duty</td><td class="comp" id="tdr_i56">0.00</td></tr>
-            <tr class="tdr-yellow"><td colspan="8" style="text-align:center;font-weight:700;">Grand Total</td><td class="comp" id="tdr_i57">0.00</td></tr>
-          </table>
-
-          <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start;">
-            <table id="fungibleTable" style="width:360px;flex-shrink:0;">
-              <tr class="fung-header"><td colspan="2">Fungible & Development Cess Figures</td></tr>
-              <tr>
-                <td class="fung-row">Fungible Payment (Resi)</td>
-                <td class="comp" id="fung_resi">0.00</td>
-              </tr>
-              <tr>
-                <td class="fung-row">Development Cess</td>
-                <td class="comp" id="fung_devcess">0.00</td>
-              </tr>
-              <tr>
-                <td class="fung-row">Fungible Payment (Comm)</td>
-                <td class="comp" id="fung_comm">0.00</td>
-              </tr>
-            </table>
-
-            <table id="areaBreakdown" style="flex:1;min-width:360px;">
-              <tr>
-                <th rowspan="2" style="text-align:left;padding-left:8px;">Description</th>
-                <th colspan="2">Area</th>
-                <th colspan="2">Existing Fungible (35%)</th>
-              </tr>
-              <tr>
-                <th>Sq.Ft.</th><th>Sq.Mt.</th>
-                <th>Sq.Ft.</th><th>Sq.Mt.</th>
-              </tr>
-              <tr>
-                <td style="text-align:left;padding-left:8px;">Total Existing Residential</td>
-                <td class="comp" id="ab_e3">0.00</td><td class="comp" id="ab_d15">0.00</td>
-                <td class="comp" id="ab_f15">0.00</td><td class="comp" id="ab_g15">0.00</td>
-              </tr>
-              <tr>
-                <td style="text-align:left;padding-left:8px;">Total Existing Commercial</td>
-                <td class="comp" id="ab_e6">0.00</td><td class="comp" id="ab_d17">0.00</td>
-                <td class="comp" id="ab_f17">0.00</td><td class="comp" id="ab_g17">0.00</td>
-              </tr>
-              <tr class="ab-yellow">
-                <td style="text-align:left;padding-left:8px;font-weight:700;">Total</td>
-                <td class="comp" id="ab_total_sqft">0.00</td><td class="comp" id="ab_total_sqmt">0.00</td>
-                <td class="comp" id="ab_total_fung_sqft">0.00</td><td class="comp" id="ab_total_fung_sqmt">0.00</td>
-              </tr>
-            </table>
-          </div>
+      </div>
+    </div>
+    <!-- Project 3 -->
+    <div class="project-card glass-card" data-cat="sheets">
+      <div class="project-thumb" style="background:linear-gradient(135deg,#0f9d58,#1a73e8);">📋</div>
+      <div class="project-body">
+        <div class="project-tags"><span class="tag">Google Sheets</span><span class="tag">Automation</span></div>
+        <h3>Purchase Order FMS</h3>
+        <p>Automated Purchase Order management system for streamlining procurement and vendor tracking.</p>
+        <div class="project-info-text">⬇ Fill Out the Project Demo and Check</div>
+        <div class="project-actions">
+          <button class="btn btn-primary btn-sm" onclick="openProjectForm(event, 'Purchase Order FMS')">Form Link</button>
+          <button class="btn btn-accent btn-sm" onclick="scrollToDataView()">Form Data View</button>
+        </div>
+      </div>
+    </div>
+    <!-- Project 4 -->
+    <div class="project-card glass-card" data-cat="sheets">
+      <div class="project-thumb" style="background:linear-gradient(135deg,#0f9d58,#1a73e8);">📋</div>
+      <div class="project-body">
+        <div class="project-tags"><span class="tag">Google Sheets</span><span class="tag">Automation</span></div>
+        <h3>Sales FMS Database</h3>
+        <p>Comprehensive Sales Financial Management System to track revenue pipelines and conversion rates.</p>
+        <div class="project-info-text">⬇ Fill Out the Project Demo and Check</div>
+        <div class="project-actions">
+          <button class="btn btn-primary btn-sm" onclick="openProjectForm(event, 'Sales FMS Database')">Form Link</button>
+          <button class="btn btn-accent btn-sm" onclick="scrollToDataView()">Form Data View</button>
+        </div>
+      </div>
+    </div>
+    <!-- Project 5 -->
+    <div class="project-card glass-card" data-cat="sheets">
+      <div class="project-thumb" style="background:linear-gradient(135deg,#0f9d58,#1a73e8);">📋</div>
+      <div class="project-body">
+        <div class="project-tags"><span class="tag">Google Sheets</span><span class="tag">Automation</span></div>
+        <h3>Order Workflow Automation</h3>
+        <p>End-to-end tracking from initial order placement to final service delivery (Golden Service).</p>
+        <div class="project-info-text">⬇ Fill Out the Project Demo and Check</div>
+        <div class="project-actions">
+          <button class="btn btn-primary btn-sm" onclick="openProjectForm(event, 'Order Workflow Automation')">Form Link</button>
+          <button class="btn btn-accent btn-sm" onclick="scrollToDataView()">Form Data View</button>
+        </div>
+      </div>
+    </div>
+    <!-- Project 6 -->
+    <div class="project-card glass-card" data-cat="sheets">
+      <div class="project-thumb" style="background:linear-gradient(135deg,#0f9d58,#1a73e8);">📋</div>
+      <div class="project-body">
+        <div class="project-tags"><span class="tag">Google Sheets</span><span class="tag">Automation</span></div>
+        <h3>Challan Management System</h3>
+        <p>Digital challan generation and tracking system with automated database updates.</p>
+        <div class="project-info-text">⬇ Fill Out the Project Demo and Check</div>
+        <div class="project-actions">
+          <button class="btn btn-primary btn-sm" onclick="openProjectForm(event, 'Challan Management System')">Form Link</button>
+          <button class="btn btn-accent btn-sm" onclick="scrollToDataView()">Form Data View</button>
+        </div>
+      </div>
+    </div>
+    <!-- Project 7 -->
+    <div class="project-card glass-card" data-cat="sheets">
+      <div class="project-thumb" style="background:linear-gradient(135deg,#0f9d58,#1a73e8);">📋</div>
+      <div class="project-body">
+        <div class="project-tags"><span class="tag">Google Sheets</span><span class="tag">Automation</span></div>
+        <h3>Vendor Onboarding Portal</h3>
+        <p>Automated onboarding workflow for new vendors including documentation and approval tracking.</p>
+        <div class="project-info-text">⬇ Fill Out the Project Demo and Check</div>
+        <div class="project-actions">
+          <button class="btn btn-primary btn-sm" onclick="openProjectForm(event, 'Vendor Onboarding Portal')">Form Link</button>
+          <button class="btn btn-accent btn-sm" onclick="scrollToDataView()">Form Data View</button>
+        </div>
+      </div>
+    </div>
+    <!-- Project 8 -->
+    <div class="project-card glass-card" data-cat="sheets">
+      <div class="project-thumb" style="background:linear-gradient(135deg,#0f9d58,#1a73e8);">📋</div>
+      <div class="project-body">
+        <div class="project-tags"><span class="tag">Google Sheets</span><span class="tag">Automation</span></div>
+        <h3>Project Management System</h3>
+        <p>Integrated PMS for tracking project milestones, resource allocation, and timelines.</p>
+        <div class="project-info-text">⬇ Fill Out the Project Demo and Check</div>
+        <div class="project-actions">
+          <button class="btn btn-primary btn-sm" onclick="openProjectForm(event, 'Project Management System')">Form Link</button>
+          <button class="btn btn-accent btn-sm" onclick="scrollToDataView()">Form Data View</button>
+        </div>
+      </div>
+    </div>
+    <!-- Project 9 -->
+    <div class="project-card glass-card" data-cat="sheets">
+      <div class="project-thumb" style="background:linear-gradient(135deg,#0f9d58,#1a73e8);">📋</div>
+      <div class="project-body">
+        <div class="project-tags"><span class="tag">Google Sheets</span><span class="tag">Automation</span></div>
+        <h3>Site Issue Tracker</h3>
+        <p>Field-to-office reporting system to log and resolve site issues in real-time.</p>
+        <div class="project-info-text">⬇ Fill Out the Project Demo and Check</div>
+        <div class="project-actions">
+          <button class="btn btn-primary btn-sm" onclick="openProjectForm(event, 'Site Issue Tracker')">Form Link</button>
+          <button class="btn btn-accent btn-sm" onclick="scrollToDataView()">Form Data View</button>
+        </div>
+      </div>
+    </div>
+    <!-- Project 10 -->
+    <div class="project-card glass-card" data-cat="sheets">
+      <div class="project-thumb" style="background:linear-gradient(135deg,#0f9d58,#1a73e8);">📋</div>
+      <div class="project-body">
+        <div class="project-tags"><span class="tag">Google Sheets</span><span class="tag">Automation</span></div>
+        <h3>Multi-Dept Billing System</h3>
+        <p>Centralized billing database handling multiple departments with automated summaries.</p>
+        <div class="project-info-text">⬇ Fill Out the Project Demo and Check</div>
+        <div class="project-actions">
+          <button class="btn btn-primary btn-sm" onclick="openProjectForm(event, 'Multi-Dept Billing System')">Form Link</button>
+          <button class="btn btn-accent btn-sm" onclick="scrollToDataView()">Form Data View</button>
+        </div>
+      </div>
+    </div>
+    <!-- Project 11 -->
+    <div class="project-card glass-card" data-cat="sheets">
+      <div class="project-thumb" style="background:linear-gradient(135deg,#0f9d58,#1a73e8);">📋</div>
+      <div class="project-body">
+        <div class="project-tags"><span class="tag">Google Sheets</span><span class="tag">Automation</span></div>
+        <h3>Approval Workflow System</h3>
+        <p>Automated approval chain for invoices and bills with email notifications for stakeholders.</p>
+        <div class="project-info-text">⬇ Fill Out the Project Demo and Check</div>
+        <div class="project-actions">
+          <button class="btn btn-primary btn-sm" onclick="openProjectForm(event, 'Approval Workflow System')">Form Link</button>
+          <button class="btn btn-accent btn-sm" onclick="scrollToDataView()">Form Data View</button>
+        </div>
+      </div>
+    </div>
+    <!-- Project 12 -->
+    <div class="project-card glass-card" data-cat="sheets">
+      <div class="project-thumb" style="background:linear-gradient(135deg,#0f9d58,#1a73e8);">📋</div>
+      <div class="project-body">
+        <div class="project-tags"><span class="tag">Google Sheets</span><span class="tag">Automation</span></div>
+        <h3>Daily Production Reporter</h3>
+        <p>Automated data collection for daily production outputs with visual trend analysis.</p>
+        <div class="project-info-text">⬇ Fill Out the Project Demo and Check</div>
+        <div class="project-actions">
+          <button class="btn btn-primary btn-sm" onclick="openProjectForm(event, 'Daily Production Reporter')">Form Link</button>
+          <button class="btn btn-accent btn-sm" onclick="scrollToDataView()">Form Data View</button>
+        </div>
+      </div>
+    </div>
+    <!-- Project 13 -->
+    <div class="project-card glass-card" data-cat="docs">
+      <div class="project-thumb" style="background:linear-gradient(135deg,#4285f4,#7baaf7);">📝</div>
+      <div class="project-body">
+        <div class="project-tags"><span class="tag">Google Docs</span><span class="tag">Apps Script</span></div>
+        <h3>Invoice Generator System</h3>
+        <p>Automated invoice and proposal generation from Sheets data with branded templates.</p>
+        <div class="project-info-text">⬇ Fill Out the Project Demo and Check</div>
+        <div class="project-actions">
+          <button class="btn btn-primary btn-sm" onclick="openProjectForm(event, 'Invoice Generator System')">Form Link</button>
+          <button class="btn btn-accent btn-sm" onclick="scrollToDataView()">Form Data View</button>
+        </div>
+      </div>
+    </div>
+    <!-- Project 14 -->
+    <div class="project-card glass-card" data-cat="excel">
+      <div class="project-thumb" style="background:linear-gradient(135deg,#217346,#33a867);">📗</div>
+      <div class="project-body">
+        <div class="project-tags"><span class="tag">Excel</span><span class="tag">VBA</span></div>
+        <h3>Financial Reporting Dashboard</h3>
+        <p>Multi-sheet financial model with VBA macros for automated P&L and cash flow reporting.</p>
+        <div class="project-info-text">⬇ Fill Out the Project Demo and Check</div>
+        <div class="project-actions">
+          <button class="btn btn-primary btn-sm" onclick="openProjectForm(event, 'Financial Reporting Dashboard')">Form Link</button>
+          <button class="btn btn-accent btn-sm" onclick="scrollToDataView()">Form Data View</button>
+        </div>
+      </div>
+    </div>
+    <!-- Project 15 -->
+    <div class="project-card glass-card" data-cat="excel">
+      <div class="project-thumb" style="background:linear-gradient(135deg,#217346,#185c37);">🔄</div>
+      <div class="project-body">
+        <div class="project-tags"><span class="tag">Excel</span><span class="tag">Power Query</span></div>
+        <h3>HR Analytics Workbook</h3>
+        <p>Employee data consolidation with Power Query ETL and attrition analysis dashboards.</p>
+        <div class="project-info-text">⬇ Fill Out the Project Demo and Check</div>
+        <div class="project-actions">
+          <button class="btn btn-primary btn-sm" onclick="openProjectForm(event, 'HR Analytics Workbook')">Form Link</button>
+          <button class="btn btn-accent btn-sm" onclick="scrollToDataView()">Form Data View</button>
+        </div>
+      </div>
+    </div>
+    <!-- Project 16 -->
+    <div class="project-card glass-card" data-cat="powerbi">
+      <div class="project-thumb" style="background:linear-gradient(135deg,#f2c811,#e8a500);">📈</div>
+      <div class="project-body">
+        <div class="project-tags"><span class="tag">Power BI</span><span class="tag">DAX</span></div>
+        <h3>E-Commerce Sales Dashboard</h3>
+        <p>Interactive Power BI report with drill-through pages, custom DAX measures, and RLS.</p>
+        <div class="project-info-text">⬇ Fill Out the Project Demo and Check</div>
+        <div class="project-actions">
+          <button class="btn btn-primary btn-sm" onclick="openProjectForm(event, 'E-Commerce Sales Dashboard')">Form Link</button>
+          <button class="btn btn-accent btn-sm" onclick="scrollToDataView()">Form Data View</button>
         </div>
       </div>
     </div>
   </div>
+</section>
 
-</div><!-- /page-body -->
+<section id="about">
+  <div class="section-header">
+    <span class="section-label">About Us</span>
+    <h2>Why Infinity Automation Systems Creation?</h2>
+  </div>
+  <div class="about-grid">
+    <div class="about-text">
+      <p>We are a specialized team focused on data automation and business intelligence. With deep expertise across Google Workspace, Microsoft ecosystem, and leading BI platforms, we deliver solutions that save time and drive decisions.</p>
+      <p>From simple spreadsheet automations to enterprise-level dashboards, every project is crafted with precision, performance, and scalability in mind.</p>
+      <a href="#contact" class="btn btn-primary">Work With Us</a>
+    </div>
+    <div class="about-features">
+      <div class="feature-card glass-card">
+        <span class="feature-icon">🚀</span>
+        <h4>Fast Delivery</h4>
+      </div>
+      <div class="feature-card glass-card">
+        <span class="feature-icon">🎯</span>
+        <h4>Precision Focused</h4>
+      </div>
+      <div class="feature-card glass-card">
+        <span class="feature-icon">🔒</span>
+        <h4>Data Security</h4>
+      </div>
+      <div class="feature-card glass-card">
+        <span class="feature-icon">💡</span>
+        <h4>Smart Solutions</h4>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="contact">
+  <div class="section-header">
+    <span class="section-label">Get In Touch</span>
+    <h2>Start Your Project</h2>
+    <p style="color:var(--text-muted)">Ready to automate your data workflows? Let's talk.</p>
+  </div>
+  <div class="contact-grid">
+    <div class="contact-info glass-card" style="padding: 2rem;">
+      <h3>Let's Connect</h3>
+      <p style="margin: 1rem 0;">📧 nareshchavan86@gmail.com</p>
+      <p style="margin: 1rem 0;">📱 +91 98924 02110</p>
+      <p style="margin: 1rem 0;">📍 Mumbai, India</p>
+      <p style="margin: 1rem 0;">⏰ Response: Within 24 hours</p>
+    </div>
+    <form class="contact-form glass-card" id="contactForm" onsubmit="submitToGoogleSheets(event)">
+      <input type="hidden" id="formTargetUrl">
+      <input type="text" id="formName" placeholder="Your Name" required>
+      <input type="email" id="formEmail" placeholder="Your Email" required>
+      <input type="text" id="formProjectType" placeholder="Project Type (e.g. Power BI Dashboard)">
+      <input type="url" id="formLinkUpload" placeholder="Link / Upload URL (Optional)">
+      <textarea id="formMessage" rows="4" placeholder="Tell us about your project..." required></textarea>
+      <button type="submit" class="btn btn-primary" id="submitBtn">Send Message 🚀</button>
+    </form>
+  </div>
+</section>
+
+<section id="dataview">
+  <div class="section-header">
+    <span class="section-label">Submissions</span>
+    <h2>Form Data View</h2>
+    <p style="color:var(--text-muted)">All data collected from the project forms</p>
+  </div>
+  <div class="dataview-container">
+    <iframe src="https://script.google.com/macros/s/AKfycbwv3Y5NIEslEzGnBuCQqaqpu7WGeHRLy_m0KyVRe2Ru7js4ny0UybOnrZG-PL2--Z3yZQ/exec" allowfullscreen></iframe>
+  </div>
+</section>
+
+
+<footer>
+  <p>© 2026 Infinity Automation Systems. All rights reserved. ⚡</p>
+</footer>
+
+<!-- THREE.JS ENGINE -->
+<script type="importmap">
+  {
+    "imports": {
+      "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
+    }
+  }
+</script>
+
+<script type="module">
+  import * as THREE from 'three';
+
+  const container = document.getElementById('canvas-container');
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+  const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+  renderer.setSize(window.innerWidth, window.innerHeight);
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  container.appendChild(renderer.domElement);
+
+  const geometry = new THREE.TorusKnotGeometry(10, 3, 100, 16);
+  const material = new THREE.MeshStandardMaterial({
+    color: 0x1a73e8,
+    wireframe: true,
+    emissive: 0x00c853,
+    emissiveIntensity: 0.5
+  });
+  const knot = new THREE.Mesh(geometry, material);
+  scene.add(knot);
+
+  const starGeo = new THREE.BufferGeometry();
+  const starCount = 3000;
+  const starPos = new Float32Array(starCount * 3);
+  for(let i=0; i<starCount*3; i++) starPos[i] = (Math.random()-0.5)*150;
+  starGeo.setAttribute('position', new THREE.BufferAttribute(starPos, 3));
+  const starMat = new THREE.PointsMaterial({ size: 0.1, color: 0xffffff });
+  const stars = new THREE.Points(starGeo, starMat);
+  scene.add(stars);
+
+  const light = new THREE.PointLight(0xffffff, 100);
+  light.position.set(20, 20, 20);
+  scene.add(light, new THREE.AmbientLight(0xffffff, 0.5));
+
+  camera.position.z = 30;
+
+  let mouseX = 0, mouseY = 0;
+  document.addEventListener('mousemove', (e) => {
+    mouseX = (e.clientX / window.innerWidth) - 0.5;
+    mouseY = (e.clientY / window.innerHeight) - 0.5;
+  });
+
+  const animate = () => {
+    requestAnimationFrame(animate);
+    knot.rotation.x += 0.005;
+    knot.rotation.y += 0.005;
+    const scrollY = window.scrollY;
+    knot.position.y = -scrollY * 0.02;
+    knot.rotation.z = scrollY * 0.001;
+    camera.position.z = 30 + (scrollY * 0.01);
+    knot.rotation.x += mouseY * 0.05;
+    knot.rotation.y += mouseX * 0.05;
+    stars.rotation.y += 0.0005;
+    renderer.render(scene, camera);
+  };
+
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  animate();
+</script>
 
 <script>
-  /* ═══════════════════════════════
-     CONFIG
-  ═══════════════════════════════ */
-  const AUTHORIZED_EMAILS = ['nareshchavan86@gmail.com'];
-  const MAX_OTP_ATTEMPTS  = 3;
-  const LOCKOUT_SECS      = 60;
-  const OTP_VALID_SECS    = 300;
-
-  let currentOTP = '', otpAttempts = 0;
-  let otpCountdown = null, lockedOut = false;
-  let lockoutInterval = null, otpExpiry = 0;
-  let currentAuthEmail = '';
-
-  /* ═══════════════════════════════
-     CALCULATIONS
-  ═══════════════════════════════ */
-  const F = 10.764;
-  let _e3=0,_e6=0,_d3=0,_d6=0;
-  let _d5=0,_e5=0,_d8=0,_e8=0,_d9=0,_e9=0;
-  let _l15=0,_l18=0,_l23=0,_l25=0,_l26=0;
-  let _l29=0,_l30=0,_l31=0,_m31=0,_l32=0,_m32=0;
-  let _l40=0,_l41=0,_l43=0,_m42=0,_m43=0;
-  let _rr=0,_l9_total=0,_l9d=0,_l22=0;
-  let _tdr_grand=0;
-
-  function vi(id){
-    const el=document.getElementById(id);
-    if(!el)return 0;
-    const val=el.tagName==='INPUT'?el.value:el.textContent;
-    const n=parseFloat(val);
-    return isNaN(n)?0:n;
-  }
-  function s(id,val,dec){
-    const el=document.getElementById(id);
-    if(!el)return;
-    if(typeof val==='number'){
-      const v=val.toFixed(dec!==undefined?dec:2);
-      el.textContent=v;
-    } else { el.textContent=val; }
+  function toggleNav() {
+    document.getElementById('navLinks').classList.toggle('open');
   }
 
-  function fmt(n){
-    return new Intl.NumberFormat('en-IN',{minimumFractionDigits:2,maximumFractionDigits:2}).format(n);
-  }
+  const counters = document.querySelectorAll('.counter');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting) {
+        const target = +entry.target.getAttribute('data-target');
+        let count = 0;
+        const updateCount = () => {
+          const inc = target / 100;
+          if(count < target) {
+            count += inc;
+            entry.target.innerText = Math.ceil(count) + (target === 100 ? '%' : '+');
+            setTimeout(updateCount, 20);
+          } else {
+            entry.target.innerText = target + (target === 100 ? '%' : '+');
+          }
+        };
+        updateCount();
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.5 });
+  counters.forEach(c => observer.observe(c));
 
-  function calcArea(){
-    _e3=vi('e3'); _d3=_e3/F;
-    const c4=vi('c4')/100, e4=_e3*c4, d4=e4/F;
-    _d5=_d3+d4; _e5=_e3+e4;
-    _e6=vi('e6'); _d6=_e6/F;
-    const c7=vi('c7')/100, e7=_e6*c7, d7=e7/F;
-    _d8=_d6+d7; _e8=_e6+e7;
-    _e9=_e5+_e8; _d9=_e9/F;
-    s('d3',_d3); s('d4',d4); s('e4',e4);
-    s('d5',_d5); s('e5',_e5);
-    s('d6',_d6); s('d7',d7); s('e7',e7);
-    s('d8',_d8); s('e8',_e8);
-    s('d9',_d9); s('e9',_e9);
-    s('s_d3',_d3); s('s_e3',_e3); s('s_d4',d4); s('s_e4',e4);
-    s('s_d5',_d5); s('s_e5',_e5); s('s_d6',_d6); s('s_e6',_e6);
-    s('s_d7',d7); s('s_e7',e7); s('s_d8',_d8); s('s_e8',_e8);
-    s('l_d9',_d9); s('m_e9',_e9);
-    // KPI
-    document.getElementById('kpi_e9').textContent = fmt(_e9);
-    calcScheme();
-  }
-
-  function calcScheme(){
-    _rr=vi('rr_value');
-    const l6=vi('l6'); s('m6',l6*F);
-    const l7=vi('l7'); s('m7',l7*F);
-    const l9a=vi('l9a'); s('m9a',l9a*F);
-    _l9_total=l9a; s('l9_total',_l9_total); s('m9_total',_l9_total*F);
-    const l10=l6-_l9_total; s('l10',l10); s('m10',l10*F);
-    _l15=l10; s('l15',_l15); s('m15',_l15*F);
-    _l18=_l15; s('l18',_l18); s('m22',_l18*F);
-    const j23=vi('j23'); _l23=_l18*j23; s('l23',_l23); s('m23',_l23*F);
-    const j25=vi('j25'); _l25=_l18*j25; s('l25',_l25); s('m25',_l25*F);
-    const j26=vi('j26'); _l26=_l18*j26; s('l26',_l26); s('m26',_l26*F);
-    _l9d=_l9_total*2; s('l9d',_l9d);
-    _l29=_l23+_l25+_l26+_l9d; s('l29',_l29); s('m29',_l29*F);
-    _l30=_l29*0.35; s('l30',_l30); s('m30',_l30*F);
-    _l31=_l29+_l30; _m31=_l31*F; s('l31',_l31); s('m31',_m31);
-    _l32=_l31*0.88; _m32=_l32*F; s('l32',_l32); s('m32',_m32);
-    _l40=_l32-_d9; s('l40',_l40); s('m40',_l40*F);
-    const l40r=_l40*1.04; s('l40r',l40r); s('m40r',l40r*F);
-    const l43El=document.getElementById('l43_in');
-    if(l43El&&l43El.value.trim()!==''){_l43=parseFloat(l43El.value)||_d8;}
-    else{_l43=_d8; if(l43El&&document.activeElement!==l43El)l43El.value=_l43.toFixed(2);}
-    _m43=_l43*F; s('m43',_m43);
-    _l41=_l40-_l43; _m42=_l41*F; s('l41',_l41); s('m42',_m42);
-    _l22=_l43*1.1;
-    // KPIs
-    document.getElementById('kpi_m31').textContent = fmt(_m31);
-    document.getElementById('kpi_m40').textContent = fmt(_l40*F);
-    calcTDR(); calcBMC(); calcRecovery(); calcFungible();
-  }
-
-  function calcTDR(){
-    s('tdr_l15',_l15); s('tdr_l15b',_l15);
-    s('tdr_l25',_l25); s('tdr_l25b',_l25);
-    s('tdr_l1',_rr); s('tdr_l1b',_rr);
-    const b49=_l25*0.8,c49=b49*F,f49=b49,g49=f49*0.65,h49=g49*_rr;
-    s('tdr_b49',b49); s('tdr_c49',c49); s('tdr_f49',f49); s('tdr_g49',g49); s('tdr_h49',h49);
-    const b52=_l25*0.2,c52=b52*F,f52=b52,g52=f52*0.95,h52=g52*_rr;
-    s('tdr_b52',b52); s('tdr_c52',c52); s('tdr_f52',f52); s('tdr_g52',g52); s('tdr_h52',h52);
-    const i54=h49+h52,i55=i54*0.03,i56=i54*0.01;
-    _tdr_grand=i54+i55+i56;
-    s('tdr_i54',i54); s('tdr_i55',i55); s('tdr_i56',i56); s('tdr_i57',_tdr_grand);
-  }
-
-  function calcBMC(){
-    s('bmc_i57_area',_l26); s('u4',_tdr_grand);
-    s('bmc_l26',_l25); const u5=_l25*F*_rr*0.5; s('u5',u5);
-    const rr2=_e9>0?_e5/_e9:0, cr2=_e9>0?_e8/_e9:0;
-    const f62=_l30*0.88*rr2; s('bmc_f62',f62); const u6=f62*F*_rr*0.5; s('u6',u6);
-    const f66=_l30*0.88*cr2; s('bmc_f66',f66); const u7=f66*F*_rr*0.6; s('u7',u7);
-    s('bmc_l15_ls',_l15); const u8=_l15*18; s('u8',u8);
-    s('bmc_l15_ld',_l15); const u9=_l15*50; s('u9',u9);
-    s('bmc_l31_iod',_l31); const u10=_m31*0.01; s('u10',u10);
-    s('bmc_m31_drd',_m31); const u11=_m31; s('u11',u11);
-    const l29l30=_l29+_l30; s('bmc_l29l30',l29l30); const u12=l29l30*31763*0.01; s('u12',u12);
-    const u13=_l31*0.25*0.1; s('u13',u13);
-    const u14=_l31*0.25*0.1; s('u14',u14);
-    const u15=_l15*_rr*0.0237*2; s('u15',u15);
-    s('bmc_l15_fh',_l15); s('bmc_l1_fh',_rr); const u16=_l15*_rr*0.1; s('u16',u16);
-    const ccr=vi('cc_rate')||3304, ccr2=vi('cc_rate2')||3304;
-    const u43=_m31*ccr, u44=_m31*0.4*ccr2, u45=u43+u44;
-    s('bmc_m31_cc',_m31); s('bmc_m31_40',_m31*0.4);
-    s('u43',u43); s('u44',u44); s('u45',u45);
-    const u17=u45*0.04; s('u17',u17);
-    s('bmc_m31_misc',_m31); const u19=_m31*1.5*400; s('u19',u19);
-    s('bmc_f64l1_area',_l31); const u20=_l31*_rr*0.05; s('u20',u20);
-    s('bmc_l18_dc',_l18); s('bmc_l1_dc1',_rr); const u22=_l18*_rr*0.01; s('u22',u22);
-    s('bmc_l31_dc',_l31); s('bmc_l1_dc2',_rr); const u23=_l31*_rr*0.04; s('u23',u23);
-    s('bmc_l22_dc',_l22); s('bmc_l1_dc3',_rr); const u24=_l22*_rr*0.02; s('u24',u24);
-    s('bmc_l43_dc',_l43); s('bmc_l1_dc4',_rr); const u25=_l43*1.1*_rr*0.08; s('u25',u25);
-    s('bmc_l31_cfo1',_l31); const u27=_l31*159; s('u27',u27);
-    s('bmc_l31_cfo2',_l31); const u28=_l31*239; s('u28',u28);
-    const rr1=vi('rent_r1')||75, rr2x=rr1*1.1, rr3=rr2x*1.1;
-    document.getElementById('bmc_r2_rate').textContent=rr2x.toFixed(2);
-    document.getElementById('bmc_r3_rate').textContent=rr3.toFixed(2);
-    s('bmc_e3_r1',_e3); s('bmc_e3_r2',_e3); s('bmc_e3_r3',_e3);
-    const u30=_e3*rr1*12, u31=_e3*rr2x*12, u32=_e3*rr3*12;
-    s('u30',u30); s('u31',u31); s('u32',u32);
-    const rc1=vi('rent_c1')||100, rc2=rc1*1.1, rc3=rc2*1.1;
-    document.getElementById('bmc_cr2_rate').textContent=rc2.toFixed(2);
-    document.getElementById('bmc_cr3_rate').textContent=rc3.toFixed(2);
-    s('bmc_e6_r1',_e6); s('bmc_e6_r2',_e6); s('bmc_e6_r3',_e6);
-    const u33=_e6*rc1*12, u34=_e6*rc2*12, u35=_e6*rc3*12;
-    s('u33',u33); s('u34',u34); s('u35',u35);
-    s('bmc_e3_corp',_e3); const u36=_e3*1000; s('u36',u36);
-    s('bmc_e6_corp',_e6); s('u37',0); s('bmc_e6_brok',_e6); s('u39',0);
-    s('bmc_e6_shift',_e6); s('u41',0);
-    const u46=_tdr_grand+u5+u6+u7+u8+u9+u10+u11+u12+u13+u14+u15+u16+
-              u17+12500000+u19+u20+u22+u23+u24+u25+u27+u28+
-              u30+u31+u32+u33+u34+u35+u36+400000+240000+u45;
-    const ib=vi('interest_base')||40000000;
-    const u47=ib*0.15*2; s('u47',u47);
-    const u48=u46+u47; s('u48',u48);
-    window._u48=u48;
-    document.getElementById('kpi_u48').textContent = fmt(u48);
-  }
-
-  function calcRecovery(){
-    s('rec_m42',_m42); s('rec_m43',_m43);
-    const sr=vi('sale_resi_rate')||27000, sc=vi('sale_comm_rate')||52000;
-    const pc=vi('parking_count')||25, pr=vi('parking_rate')||1000000;
-    const u50=_m42*sr, u51=_m43*sc, u52=pc*pr, u53=u50+u51+u52;
-    s('u50',u50); s('u51',u51); s('u52',u52); s('u53',u53);
-    const u48=window._u48||0, gp=u53-u48; s('u54',gp);
-    const pct=u48>0?gp/u48*100:0;
-    document.getElementById('u54_pct').textContent=pct.toFixed(2)+' %';
-    document.getElementById('kpi_pct').textContent=pct.toFixed(2);
-  }
-
-  function calcFungible(){
-    const rr=_e9>0?_e5/_e9:0;
-    s('fung_resi',_l30*rr);
-    s('fung_devcess',_l31*_rr*0.05);
-    s('fung_comm',_m43*1.05/F*0.35);
-    s('ab_e3',_e3); s('ab_d15',_e3/F); s('ab_f15',_e3*0.35); s('ab_g15',_e3*0.35/F);
-    s('ab_e6',_e6); s('ab_d17',_e6/F); s('ab_f17',_e6*0.35); s('ab_g17',_e6*0.35/F);
-    const t=_e3+_e6;
-    s('ab_total_sqft',t); s('ab_total_sqmt',t/F);
-    s('ab_total_fung_sqft',t*0.35); s('ab_total_fung_sqmt',t*0.35/F);
-  }
-
-  ['e3','c4','e6','c7','rr_value','l6','l7','l9a','j23','roadWidth',
-   'j25','j26','l43_in','rent_r1','rent_c1','cc_rate','cc_rate2',
-   'interest_base','sale_resi_rate','sale_comm_rate','parking_count','parking_rate'
-  ].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el){
-      el.addEventListener('input',()=>{ el.style.color=''; calcArea(); });
-      el.addEventListener('change', calcArea);
-    }
-  });
-
-  /* ═══════════════════════════════
-     AUTH SYSTEM
-  ═══════════════════════════════ */
-  function openBackendAuth(){
-    if(sessionStorage.getItem('backend_auth')==='true' &&
-       AUTHORIZED_EMAILS.includes(sessionStorage.getItem('backend_email'))){
-      document.getElementById('backend-content').style.display='block';
-      document.getElementById('logged-email').textContent=sessionStorage.getItem('backend_email');
-      document.getElementById('backend-access-btn').style.display='none';
-      document.getElementById('backend-section').scrollIntoView({behavior:'smooth'});
-      return;
-    }
-    document.getElementById('auth-modal').style.display='flex';
-    document.getElementById('email-input').focus();
-  }
-  function closeAuthModal(){
-    document.getElementById('auth-modal').style.display='none';
-    backToStep1();
-  }
-  function generateOTP(){ return Math.floor(100000+Math.random()*900000).toString(); }
-  function showStep(id){
-    document.querySelectorAll('.auth-step').forEach(s=>s.classList.remove('active'));
-    document.getElementById(id).classList.add('active');
-  }
-  function updateDots(active,done1){
-    [document.getElementById('dot1'),document.getElementById('dot2'),document.getElementById('dot3')].forEach((d,i)=>{
-      d.classList.remove('active','done');
-      if(i<done1) d.classList.add('done');
-      else if(i===active) d.classList.add('active');
+  function filterProjects(cat, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    document.querySelectorAll('.project-card').forEach(card => {
+      // Fixed: Comparing category slug (e.g. 'sheets') with data-cat attribute
+      card.style.display = (cat === 'all' || card.dataset.cat === cat) ? 'block' : 'none';
     });
   }
-  function showMsg(id,text,type){
-    const el=document.getElementById(id);
-    el.className='auth-msg '+type; el.textContent=text;
-  }
-  function hideMsg(id){
-    const el=document.getElementById(id);
-    el.className='auth-msg'; el.textContent='';
-  }
-  function isValidEmail(e){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e); }
 
-  function submitEmail(){
-    if(lockedOut)return;
-    const el=document.getElementById('email-input');
-    const email=el.value.trim().toLowerCase();
-    hideMsg('email-msg'); el.classList.remove('error','success');
-    if(!email){ el.classList.add('error'); showMsg('email-msg','⚠ Please enter your email.','error'); return; }
-    if(!isValidEmail(email)){ el.classList.add('error'); showMsg('email-msg','⚠ Invalid email address.','error'); return; }
-    if(!AUTHORIZED_EMAILS.includes(email)){
-      el.classList.add('error');
-      document.getElementById('denied-email-show').textContent=email;
-      showStep('step3-denied'); updateDots(2,1); return;
+
+  function openProjectForm(event, arg) {
+    if (arg.startsWith('http')) {
+      window.open(arg, '_blank');
+      return;
     }
-    currentAuthEmail=email; el.classList.add('success');
-    currentOTP=generateOTP(); otpExpiry=Date.now()+OTP_VALID_SECS*1000; otpAttempts=0;
-    console.log('%c🔑 OTP: '+currentOTP,'color:green;font-size:18px;font-weight:bold;');
-    setTimeout(()=>alert('📧 OTP Sent!\n\nYour code:\n\n'+currentOTP+'\n\n(In production, sent to: '+email+')'),100);
-    document.getElementById('otp-email-display').textContent=email;
-    showStep('step2'); updateDots(1,1); startOTPCountdown();
-    document.getElementById('otp-input').focus();
+
+    document.getElementById('formTargetUrl').value = "";
+    document.getElementById('formProjectType').value = arg;
+    document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
   }
 
-  function startOTPCountdown(){
-    clearInterval(otpCountdown);
-    const el=document.getElementById('otp-countdown');
-    otpCountdown=setInterval(()=>{
-      const rem=Math.max(0,Math.floor((otpExpiry-Date.now())/1000));
-      const m=Math.floor(rem/60).toString().padStart(2,'0');
-      const s=(rem%60).toString().padStart(2,'0');
-      el.textContent=m+':'+s;
-      if(rem<=0){ clearInterval(otpCountdown); el.textContent='00:00'; showMsg('otp-msg','⏰ OTP expired. Request a new code.','error'); currentOTP=''; }
-    },1000);
+  function scrollToDataView() {
+    document.getElementById('dataview').scrollIntoView({ behavior: 'smooth' });
   }
 
-  function verifyOTP(){
-    if(lockedOut)return;
-    const el=document.getElementById('otp-input');
-    const entered=el.value.trim(); hideMsg('otp-msg'); el.classList.remove('error');
-    if(!entered||entered.length<6){ el.classList.add('error'); showMsg('otp-msg','⚠ Enter the 6-digit code.','error'); return; }
-    if(!currentOTP){ showMsg('otp-msg','⏰ OTP expired. Request a new one.','error'); return; }
-    if(entered===currentOTP){
-      clearInterval(otpCountdown); currentOTP=''; otpAttempts=0;
-      updateDots(2,2); showMsg('otp-msg','✅ Verified! Unlocking backend...','success');
-      setTimeout(()=>{
-        document.getElementById('auth-modal').style.display='none';
-        document.getElementById('backend-content').style.display='block';
-        document.getElementById('logged-email').textContent=currentAuthEmail;
-        document.getElementById('backend-access-btn').style.display='none';
-        sessionStorage.setItem('backend_auth','true');
-        sessionStorage.setItem('backend_email',currentAuthEmail);
-        document.getElementById('backend-section').scrollIntoView({behavior:'smooth'});
-      },800);
+  function saveToLocalStorage(data) {
+    let submissions = JSON.parse(localStorage.getItem('submissions') || '[]');
+    submissions.push(data);
+    localStorage.setItem('submissions', JSON.stringify(submissions));
+  }
+
+  const bgMusic = document.getElementById('bgMusic');
+  const musicToggle = document.getElementById('musicToggle');
+
+  function toggleMusic() {
+    if (bgMusic.paused) {
+      bgMusic.play();
+      musicToggle.classList.remove('paused', 'manually-paused');
+      musicToggle.classList.add('playing');
     } else {
-      otpAttempts++;
-      el.classList.add('error'); el.value='';
-      document.getElementById('auth-box').classList.add('shake');
-      setTimeout(()=>document.getElementById('auth-box').classList.remove('shake'),400);
-      const rem=MAX_OTP_ATTEMPTS-otpAttempts;
-      if(rem>0) showMsg('otp-msg','❌ Incorrect code. '+rem+' attempt'+(rem>1?'s':'')+' remaining.','error');
-      else { clearInterval(otpCountdown); currentOTP=''; startLockout(); }
+      bgMusic.pause();
+      musicToggle.classList.remove('playing');
+      musicToggle.classList.add('paused', 'manually-paused');
     }
   }
 
-  function resendOTP(){
-    if(lockedOut)return;
-    currentOTP=generateOTP(); otpExpiry=Date.now()+OTP_VALID_SECS*1000; otpAttempts=0;
-    document.getElementById('otp-input').value=''; hideMsg('otp-msg');
-    console.log('%c🔑 New OTP: '+currentOTP,'color:blue;font-size:18px;');
-    alert('📧 New OTP!\n\n'+currentOTP);
-    startOTPCountdown(); showMsg('otp-msg','✅ New code sent!','success');
-  }
-
-  function backToStep1(){
-    clearInterval(otpCountdown); currentOTP='';
-    document.getElementById('email-input').value='';
-    document.getElementById('otp-input').value='';
-    document.getElementById('email-input').classList.remove('error','success');
-    hideMsg('email-msg'); hideMsg('otp-msg');
-    showStep('step1'); updateDots(0,0);
-    document.getElementById('email-input').focus();
-  }
-
-  function startLockout(){
-    lockedOut=true; let secs=LOCKOUT_SECS;
-    const ov=document.getElementById('lockout-overlay');
-    const ti=document.getElementById('lockout-timer');
-    ov.style.display='flex'; ti.textContent=secs;
-    lockoutInterval=setInterval(()=>{
-      secs--; ti.textContent=secs;
-      if(secs<=0){
-        clearInterval(lockoutInterval); lockedOut=false; otpAttempts=0;
-        ov.style.display='none'; backToStep1();
-      }
-    },1000);
-  }
-
-  function lockBackend(){
-    sessionStorage.removeItem('backend_auth');
-    sessionStorage.removeItem('backend_email');
-    document.getElementById('backend-content').style.display='none';
-    document.getElementById('backend-access-btn').style.display='flex';
-    currentAuthEmail='';
-  }
-
-  window.addEventListener('load',()=>{
-    if(sessionStorage.getItem('backend_auth')==='true' &&
-       AUTHORIZED_EMAILS.includes(sessionStorage.getItem('backend_email'))){
-      document.getElementById('backend-content').style.display='block';
-      document.getElementById('logged-email').textContent=sessionStorage.getItem('backend_email');
-      document.getElementById('backend-access-btn').style.display='none';
-    } else {
-      document.getElementById('auth-modal').style.display='none';
-      document.getElementById('backend-content').style.display='none';
-      document.getElementById('backend-access-btn').style.display='flex';
-    }
-    calcArea();
+  // Attempt autoplay on load
+  window.addEventListener('load', () => {
+    bgMusic.play().then(() => {
+      musicToggle.classList.remove('paused');
+      musicToggle.classList.add('playing');
+    }).catch(error => {
+      console.log("Autoplay blocked, waiting for interaction");
+    });
   });
+
+  // Auto-play attempt on first interaction (Fallback)
+  document.addEventListener('click', () => {
+    if (bgMusic.paused && !musicToggle.classList.contains('manually-paused')) {
+      bgMusic.play().then(() => {
+        musicToggle.classList.remove('paused');
+        musicToggle.classList.add('playing');
+      }).catch(() => {});
+    }
+  }, { once: true });
+
+  async function submitToGoogleSheets(e) {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    btn.textContent = 'Sending...';
+    btn.disabled = true;
+
+    const name = document.getElementById('formName').value;
+    const email = document.getElementById('formEmail').value;
+    const projectType = document.getElementById('formProjectType').value;
+    const linkUpload = document.getElementById('formLinkUpload').value;
+    const message = document.getElementById('formMessage').value;
+    const targetUrl = document.getElementById('formTargetUrl').value || 'https://script.google.com/macros/s/AKfycbx1bbphT9EwJdWqPlrC4TgpBxEgkk2vHKQoBZ78FG_Ww-rjCSecmeOTbk85vuH73kyX/exec';
+    const timestamp = new Date().toLocaleString();
+
+    const formData = new URLSearchParams();
+    formData.append('name', name);
+    formData.append('email', email);
+    formData.append('projectType', projectType);
+    formData.append('linkUpload', linkUpload);
+    formData.append('message', message);
+
+    try {
+      await fetch(targetUrl, {
+        method: 'POST', mode: 'no-cors', body: formData
+      });
+
+      saveToLocalStorage({ timestamp, name, email, projectType, linkUpload, message });
+
+      // Refresh iframe if possible or just show alert
+      const iframe = document.querySelector('#dataview iframe');
+      if (iframe) iframe.src = iframe.src;
+
+      alert('✅ Message Sent Successfully!');
+      e.target.reset();
+      document.getElementById('formTargetUrl').value = '';
+      document.getElementById('dataview').scrollIntoView({ behavior: 'smooth' });
+    } catch (err) {
+      alert('❌ Error sending message.');
+    } finally {
+      btn.textContent = 'Send Message 🚀';
+      btn.disabled = false;
+    }
+  }
 </script>
 </body>
 </html>
