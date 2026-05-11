@@ -713,20 +713,13 @@
 
 
   function openProjectForm(event, arg) {
-    let title = arg;
-    let url = "";
-
     if (arg.startsWith('http')) {
-      url = arg;
-      const btn = event.currentTarget;
-      const card = btn.closest('.project-card');
-      if (card) {
-        title = card.querySelector('h3').textContent;
-      }
+      window.open(arg, '_blank');
+      return;
     }
 
-    document.getElementById('formTargetUrl').value = url;
-    document.getElementById('formProjectType').value = title;
+    document.getElementById('formTargetUrl').value = "";
+    document.getElementById('formProjectType').value = arg;
     document.getElementById('contact').scrollIntoView({ behavior: 'smooth' });
   }
 
@@ -755,7 +748,17 @@
       const tr = document.createElement('tr');
       ['timestamp', 'name', 'email', 'projectType', 'linkUpload', 'message'].forEach(key => {
         const td = document.createElement('td');
-        td.textContent = sub[key] || '';
+        const val = sub[key] || '';
+        if (key === 'linkUpload' && val.startsWith('http')) {
+          const a = document.createElement('a');
+          a.href = val;
+          a.textContent = 'View Link';
+          a.target = '_blank';
+          a.style.color = 'var(--primary)';
+          td.appendChild(a);
+        } else {
+          td.textContent = val;
+        }
         tr.appendChild(td);
       });
       body.appendChild(tr);
