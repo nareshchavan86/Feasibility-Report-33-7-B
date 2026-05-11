@@ -173,11 +173,47 @@
 
   @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
   @media (max-width: 900px) { .about-grid, .contact-grid { grid-template-columns: 1fr; } .nav-links { display: none; } }
+
+  /* ===== MUSIC TOGGLE ===== */
+  .music-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: 0.3s;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+  }
+  .music-toggle:hover {
+    transform: scale(1.1);
+    background: var(--primary);
+  }
+  .music-toggle.playing .play-icon { display: none; }
+  .music-toggle.paused .mute-icon { display: none; }
 </style>
 </head>
 <body>
 
 <div id="canvas-container"></div>
+
+<audio id="bgMusic" loop>
+  <source src="https://storage.googleapis.com/producer-app-public/clips/61587533-9929-4574-8f7e-cf2da5494603.m4a" type="audio/mpeg">
+</audio>
+
+<button class="music-toggle paused" id="musicToggle" onclick="toggleMusic()">
+  <span class="play-icon">▶</span>
+  <span class="mute-icon">⏸</span>
+</button>
 
 <nav id="navbar">
   <a class="nav-brand" href="#hero">
@@ -715,6 +751,31 @@
     submissions.push(data);
     localStorage.setItem('submissions', JSON.stringify(submissions));
   }
+
+  const bgMusic = document.getElementById('bgMusic');
+  const musicToggle = document.getElementById('musicToggle');
+
+  function toggleMusic() {
+    if (bgMusic.paused) {
+      bgMusic.play();
+      musicToggle.classList.remove('paused', 'manually-paused');
+      musicToggle.classList.add('playing');
+    } else {
+      bgMusic.pause();
+      musicToggle.classList.remove('playing');
+      musicToggle.classList.add('paused', 'manually-paused');
+    }
+  }
+
+  // Auto-play attempt on first interaction
+  document.addEventListener('click', () => {
+    if (bgMusic.paused && !musicToggle.classList.contains('manually-paused')) {
+      bgMusic.play().then(() => {
+        musicToggle.classList.remove('paused');
+        musicToggle.classList.add('playing');
+      }).catch(() => {});
+    }
+  }, { once: true });
 
   async function submitToGoogleSheets(e) {
     e.preventDefault();
