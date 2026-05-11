@@ -206,7 +206,7 @@
 
 <div id="canvas-container"></div>
 
-<audio id="bgMusic" loop>
+<audio id="bgMusic" loop autoplay>
   <source src="https://storage.googleapis.com/producer-app-public/clips/61587533-9929-4574-8f7e-cf2da5494603.m4a" type="audio/mpeg">
 </audio>
 
@@ -767,7 +767,17 @@
     }
   }
 
-  // Auto-play attempt on first interaction
+  // Attempt autoplay on load
+  window.addEventListener('load', () => {
+    bgMusic.play().then(() => {
+      musicToggle.classList.remove('paused');
+      musicToggle.classList.add('playing');
+    }).catch(error => {
+      console.log("Autoplay blocked, waiting for interaction");
+    });
+  });
+
+  // Auto-play attempt on first interaction (Fallback)
   document.addEventListener('click', () => {
     if (bgMusic.paused && !musicToggle.classList.contains('manually-paused')) {
       bgMusic.play().then(() => {
