@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Feasibility Report — Scheme 33(7)B</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
   <style>
     :root {
       --navy:   #0D1B2A;
@@ -457,6 +458,15 @@
       .page-body { padding: 16px; gap: 16px; }
       .summary-strip { flex-direction: column; }
     }
+
+    /* PDF Specific */
+    .pdf-hide { display: none !important; }
+    .pdf-break { page-break-before: always; margin-top: 40px; }
+    .pdf-only { display: none; }
+    @media print {
+      .page-header { background: #0D1B2A !important; -webkit-print-color-adjust: exact; }
+      #backend-access-btn, #lockout-overlay, #auth-modal, .header-right button { display: none !important; }
+    }
   </style>
 </head>
 <body>
@@ -532,6 +542,9 @@
     <div class="subtitle">Area Statement · BMC Expenditure · Recovery Analysis · Redevelopment Calculator</div>
   </div>
   <div class="header-right">
+    <div id="save-status" style="font-size: 11px; color: rgba(255,255,255,0.6); margin-right: 10px;"></div>
+    <button onclick="generatePDF(event)" style="background: var(--green); border: none; color: #fff; padding: 10px 18px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; margin-right: 12px; box-shadow: 0 4px 10px rgba(23,120,74,0.3);">📥 Download PDF</button>
+    <button onclick="clearData()" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 6px 12px; border-radius: 6px; font-size: 11px; cursor: pointer; margin-right: 12px;">🗑 Clear All</button>
     <div class="rr-block">
       <label>R.R. Rate</label>
       <input type="number" id="rr_value" placeholder="e.g. 72830" min="0" step="any"/>
@@ -618,7 +631,7 @@
   </div>
 
   <!-- ══ SCHEME 33(7)B ══ -->
-  <div class="card">
+  <div class="card pdf-break">
     <div class="card-header">
       <div class="dot" style="background:var(--orange);"></div>
       <h3>Scheme 33(7)B — BUA Construction</h3>
@@ -743,7 +756,7 @@
   </div>
 
   <!-- ══ BMC EXPENDITURE ══ -->
-  <div class="card">
+  <div class="card pdf-break">
     <div class="card-header">
       <div class="dot" style="background:var(--gold);"></div>
       <h3>B.M.C Expenditure</h3>
@@ -845,7 +858,7 @@
   </div>
 
   <!-- ══ RECOVERY ══ -->
-  <div class="card">
+  <div class="card pdf-break">
     <div class="card-header">
       <div class="dot" style="background:var(--green);"></div>
       <h3>Recovery Statement</h3>
@@ -1200,8 +1213,15 @@
   ].forEach(id=>{
     const el=document.getElementById(id);
     if(el){
-      el.addEventListener('input',()=>{ el.style.color=''; calcArea(); });
-      el.addEventListener('change', calcArea);
+      el.addEventListener('input',()=>{
+        el.style.color='';
+        calcArea();
+        saveData();
+      });
+      el.addEventListener('change', () => {
+        calcArea();
+        saveData();
+      });
     }
   });
 
@@ -1349,7 +1369,84 @@
     currentAuthEmail='';
   }
 
+  /* ═══════════════════════════════
+     DATA STORAGE
+  ═══════════════════════════════ */
+  function saveData() {
+    const inputs = document.querySelectorAll('.cell-input, #rr_value');
+    const data = {};
+    inputs.forEach(input => {
+      data[input.id] = input.value;
+    });
+    localStorage.setItem('feasibility_data_v1', JSON.stringify(data));
+    const status = document.getElementById('save-status');
+    if (status) {
+      status.textContent = 'Autosaved at ' + new Date().toLocaleTimeString();
+      setTimeout(() => { if(status.textContent.startsWith('Autosaved')) status.textContent = ''; }, 3000);
+    }
+  }
+
+  function loadData() {
+    const raw = localStorage.getItem('feasibility_data_v1');
+    if (!raw) return;
+    try {
+      const data = JSON.parse(raw);
+      Object.keys(data).forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = data[id];
+      });
+    } catch (e) { console.error('Error loading data', e); }
+  }
+
+  function clearData() {
+    if (confirm('Are you sure you want to clear all entered data?')) {
+      localStorage.removeItem('feasibility_data_v1');
+      document.querySelectorAll('.cell-input, #rr_value').forEach(el => el.value = '');
+      calcArea();
+    }
+  }
+
+  /* ═══════════════════════════════
+     PDF GENERATION
+  ═══════════════════════════════ */
+  async function generatePDF(event) {
+    const btn = event ? event.currentTarget : document.querySelector('button[onclick^="generatePDF"]');
+    const originalText = btn.textContent;
+    btn.textContent = '⌛ Generating...';
+    btn.disabled = true;
+
+    // Preparation for PDF
+    const element = document.body;
+    const opt = {
+      margin:       [10, 10],
+      filename:     'Feasibility_Report_Scheme33_7B.pdf',
+      image:        { type: 'jpeg', quality: 0.98 },
+      html2canvas:  { scale: 2, useCORS: true, logging: false },
+      jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+    };
+
+    // Hide UI elements not needed in PDF
+    const backendBtn = document.getElementById('backend-access-btn');
+    if(backendBtn) backendBtn.style.display = 'none';
+    const headerRight = document.querySelector('.header-right');
+    if(headerRight) headerRight.style.opacity = '0';
+
+    try {
+      await html2pdf().set(opt).from(element).save();
+    } catch (err) {
+      console.error('PDF Generation Error:', err);
+      alert('Error generating PDF. Please try again.');
+    } finally {
+      btn.textContent = originalText;
+      btn.disabled = false;
+      if(backendBtn) backendBtn.style.display = 'flex';
+      if(headerRight) headerRight.style.opacity = '1';
+    }
+  }
+
   window.addEventListener('load',()=>{
+    loadData();
     if(sessionStorage.getItem('backend_auth')==='true' &&
        AUTHORIZED_EMAILS.includes(sessionStorage.getItem('backend_email'))){
       document.getElementById('backend-content').style.display='block';
